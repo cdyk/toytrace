@@ -124,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h" />
+    <ClInclude Include="..\src\camera.h" />
     <ClInclude Include="..\src\funcs.h" />
     <ClInclude Include="..\src\intersectable.h" />
     <ClInclude Include="..\src\mat3.h" />

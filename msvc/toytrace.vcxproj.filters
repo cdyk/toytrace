@@ -54,5 +54,8 @@
     <ClInclude Include="..\src\sphere.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\camera.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

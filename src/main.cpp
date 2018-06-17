@@ -5,8 +5,14 @@
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
+#include <cstdlib>
 
 namespace {
+
+  float frand()
+  {
+    return (1.f / (1.f + RAND_MAX))*float(rand());
+  }
 
 
   vec3 color(const ray& r, intersectable* world)
@@ -29,6 +35,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 100;
+  const unsigned s = 100;
 
   uint8_t image[3 * w * h];
 
@@ -43,11 +50,16 @@ int main(int argc, char** argv)
 
   for (unsigned j = 0; j < h; j++) {
     for (unsigned i = 0; i < w; i++) {
-      auto u = float(i) / float(w);
-      auto v = float(j) / float(h);
 
-      ray r(origin, llcorner + u * horizontal + v * vertical);
-      auto col = color(r, world);
+      vec3 col;
+      for (unsigned k = 0; k < s; k++) {
+        auto u = float(i + frand()) / float(w);
+        auto v = float(j + frand()) / float(h);
+
+        ray r(origin, llcorner + u * horizontal + v * vertical);
+        col = col + color(r, world);
+      }
+      col = (1.f / s)*col;
 
       image[3 * (j*w + i) + 0] = uint8_t(255.f*saturate(col.r));
       image[3 * (j*w + i) + 1] = uint8_t(255.f*saturate(col.g));
