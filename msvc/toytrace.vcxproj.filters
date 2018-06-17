@@ -16,6 +16,12 @@
     <ClCompile Include="..\src\lib_impl.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\sphere.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\intersectable.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -40,6 +46,12 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\src\funcs.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\intersectable.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sphere.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

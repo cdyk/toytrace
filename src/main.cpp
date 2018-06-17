@@ -4,35 +4,21 @@
 #include "funcs.h"
 #include "vec3.h"
 #include "ray.h"
+#include "sphere.h"
 
 namespace {
 
-  float intersectSphere(const vec3& center, const float radius, const ray& r)
+
+  vec3 color(const ray& r, intersectable* world)
   {
-    vec3 oc = r.ori - center;
-    float a = dot(r.dir, r.dir);
-    float b = 2.f * dot(oc, r.dir);
-    float c = dot(oc, oc) - radius * radius;
-    float disc = b * b - 4 * a*c;
-    if (disc < 0) {
-      return -1.f;
-    }
-    else {
-      return (-b - std::sqrt(disc)) / (2.f*a);
-    }
-  }
+    intersection hit;
 
-
-  vec3 color(const ray& r) {
-    auto sphere_origin = vec3(0.f, 0.f, -1.f);
-
-    auto t = intersectSphere(sphere_origin, 0.5f, r);
-    if (0.f < t) {
-      vec3 n = normalize(r.at(t) - sphere_origin);
-      return 0.5f*(n + vec3(1.f, 1.f, 1.f));
+    if (world->intersect(r, 0.f, std::numeric_limits<float>::max(), hit)) {
+      return 0.5f*(hit.n + vec3(1.f, 1.f, 1.f));
     }
+
     vec3 v = normalize(r.dir);
-    t = 0.5f*(v.y + 1.f);
+    auto t = 0.5f*(v.y + 1.f);
     return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
   }
 
@@ -46,7 +32,9 @@ int main(int argc, char** argv)
 
   uint8_t image[3 * w * h];
 
-
+  auto * world = new intersectable_container();
+  world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f));
+  world->items.push_back(new sphere(vec3(0, -100.5, -2), 100.f));
 
   vec3 llcorner(-2.f, -1.f, -1.f);
   vec3 horizontal(4.f, 0.f, 0.f);
@@ -59,7 +47,7 @@ int main(int argc, char** argv)
       auto v = float(j) / float(h);
 
       ray r(origin, llcorner + u * horizontal + v * vertical);
-      auto col = color(r);
+      auto col = color(r, world);
 
       image[3 * (j*w + i) + 0] = uint8_t(255.f*saturate(col.r));
       image[3 * (j*w + i) + 1] = uint8_t(255.f*saturate(col.g));
