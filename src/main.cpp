@@ -7,10 +7,32 @@
 
 namespace {
 
+  float intersectSphere(const vec3& center, const float radius, const ray& r)
+  {
+    vec3 oc = r.ori - center;
+    float a = dot(r.dir, r.dir);
+    float b = 2.f * dot(oc, r.dir);
+    float c = dot(oc, oc) - radius * radius;
+    float disc = b * b - 4 * a*c;
+    if (disc < 0) {
+      return -1.f;
+    }
+    else {
+      return (-b - std::sqrt(disc)) / (2.f*a);
+    }
+  }
+
 
   vec3 color(const ray& r) {
-    vec3 v = normalize(r.direction());
-    float t = 0.5f*(v.y + 1.f);
+    auto sphere_origin = vec3(0.f, 0.f, -1.f);
+
+    auto t = intersectSphere(sphere_origin, 0.5f, r);
+    if (0.f < t) {
+      vec3 n = normalize(r.at(t) - sphere_origin);
+      return 0.5f*(n + vec3(1.f, 1.f, 1.f));
+    }
+    vec3 v = normalize(r.dir);
+    t = 0.5f*(v.y + 1.f);
     return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
   }
 

@@ -4,16 +4,12 @@
 struct ray
 {
   ray() {}
-  ray(const vec3& o, const vec3& d) : o(o), d(d)
+  ray(const vec3& ori, const vec3& dir) : ori(ori), dir(dir)
   {}
 
 
-  const vec3& origin() const { return o; }
-  const vec3& direction() const { return d; }
+  vec3 at(const float t) const { return ori + t * dir; }
 
-  vec3 at(const float t) { return o + t * d; }
-
-  vec3 o;
-  vec3 d;
- 
+  vec3 ori;
+  vec3 dir;
 };
