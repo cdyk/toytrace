@@ -1,13 +1,13 @@
 #pragma once
 #include <cmath>
 #include <limits>
-#include "vec.h"
-#include "mat.h"
+#include "vec3.h"
+#include "mat3.h"
 
 struct quat
 {
   quat() { data[0] = 1.f; data[1] = 0.f; data[1] = 0.f; data[2] = 0.f; }
-  quat(const vec_base<3>& v, const float w) { data[0] = v.x;  data[1] = v.y;  data[2] = v.z; data[3] = w; }
+  quat(const vec3& v, const float w) { data[0] = v.x;  data[1] = v.y;  data[2] = v.z; data[3] = w; }
 
   float data[4];
 };
@@ -42,7 +42,7 @@ quat normalize(const quat& q)
 }
 
 // n assumed to be normalized
-quat axisAngle(const vec_base<3>& n, const float theta)
+quat axisAngle(const vec3& n, const float theta)
 {
   const auto s = std::sin(0.5f * theta);
   const auto c = std::cos(0.5f * theta);
@@ -51,7 +51,7 @@ quat axisAngle(const vec_base<3>& n, const float theta)
 }
 
 // a and b are assumed to be normalized
-quat greatCircle(const vec_base<3>& a, const vec_base<3>& b)
+quat greatCircle(const vec3& a, const vec3& b)
 {
   auto n = cross(a, b);
   auto l = dot(n, n);
@@ -64,7 +64,7 @@ quat greatCircle(const vec_base<3>& a, const vec_base<3>& b)
   return quat(s*n, c);
 }
 
-mat_base<3,3> toMatrix(const quat& q)
+mat3 toMatrix(const quat& q)
 {
   auto xx = q.data[0] * q.data[0];
   auto xy = q.data[0] * q.data[1];
