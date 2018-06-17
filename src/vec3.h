@@ -1,4 +1,6 @@
 #pragma once
+#include <limits>
+#include <cmath>
 
 struct vec3
 {
@@ -23,6 +25,11 @@ struct vec3
       float y;
       float z;
     };
+    struct {
+      float r;
+      float g;
+      float b;
+    };
   };
 };
 
@@ -30,9 +37,20 @@ inline vec3 operator*(const float a, const vec3& b) { return vec3(a*b.x, a*b.y, 
 
 inline float dot(const vec3& a, const vec3& b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
 
-vec3 cross(const vec3& a, const vec3& b)
+inline vec3 normalize(const vec3& x) {
+  auto l = dot(x, x);
+  auto s = l < std::numeric_limits<float>::epsilon() ? 0.f : 1.f / std::sqrt(l);
+  return s * x;
+}
+
+inline vec3 cross(const vec3& a, const vec3& b)
 {
   return vec3(a.y * b.z - a.z * b.y,
               a.z * b.x - a.x * b.z,
               a.x * b.y - a.y * b.x);
+}
+
+inline vec3 mix(const vec3& a, const vec3& b, const float t)
+{
+  return (1.f - t) * a + t * b;
 }

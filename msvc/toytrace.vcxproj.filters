@@ -39,5 +39,8 @@
     <ClInclude Include="..\src\mat3.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\funcs.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

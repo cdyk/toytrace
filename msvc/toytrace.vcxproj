@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h" />
+    <ClInclude Include="..\src\funcs.h" />
     <ClInclude Include="..\src\mat3.h" />
     <ClInclude Include="..\src\mat4.h" />
     <ClInclude Include="..\src\quat.h" />
