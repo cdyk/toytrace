@@ -21,5 +21,14 @@
     <ClInclude Include="..\libraries\stb_image_write.h">
       <Filter>Libraries</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\vec.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\quat.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mat.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

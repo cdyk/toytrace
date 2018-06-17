@@ -1,6 +1,7 @@
 #include "stb_image_write.h"
 #include <cstdint>
 #include <cstdio>
+#include "vec.h"
 
 int main(int argc, char** argv)
 {
@@ -17,6 +18,11 @@ int main(int argc, char** argv)
       image[3 * (j*w + i) + 2] = 0;
     }
   }
+
+
+  vec3 a, b;
+
+  auto t = a - b;
 
   if (stbi_write_png(filename, w, h, 3, image, 3*w)) {
     fprintf(stderr, "Failed to write png file '%s'", filename);
