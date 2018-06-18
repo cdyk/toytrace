@@ -3,11 +3,14 @@
 #include "ray.h"
 #include <vector>
 
+class material;
+
 struct intersection
 {
   float t;
   vec3 p;
   vec3 n;
+  material* mat;
 };
 
 class intersectable

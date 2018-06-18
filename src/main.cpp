@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "camera.h"
+#include "material.h"
 #include <cstdlib>
 
 namespace {
@@ -27,12 +28,16 @@ namespace {
   vec3 color(const ray& r, intersectable* world, unsigned depth)
   {
     intersection hit;
+    if (world->intersect(r, 0.001f, std::numeric_limits<float>::max(), hit)) {
+      ray scattered;
+      vec3 attenuation;
 
-    if (depth &&  world->intersect(r, 0.001f, std::numeric_limits<float>::max(), hit)) {
-
-      vec3 target = hit.p + hit.n + random_in_unit_sphere();
-      return 0.5f*color(ray(hit.p, target - hit.p), world, depth - 1);
-      //return 0.5f*(hit.n + vec3(1.f, 1.f, 1.f));
+      if (depth && hit.mat->scatter(scattered, attenuation, r, hit)) {
+        return attenuation * color(scattered, world, depth - 1);
+      }
+      else {
+        return vec3(0, 0, 0);
+      }
     }
 
     vec3 v = normalize(r.dir);
@@ -52,19 +57,14 @@ int main(int argc, char** argv)
   uint8_t image[3 * w * h];
 
   auto * world = new intersectable_container();
-  world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f));
-  world->items.push_back(new sphere(vec3(0, -100.5, -1), 100.f));
-  world->items.push_back(new sphere(vec3(1, 0, -1), 0.5f));
-  world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f));
+  world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f))));
+  world->items.push_back(new sphere(vec3(0, -100.5, -1), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f))));
+  world->items.push_back(new sphere(vec3(1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.6f)));
+  world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f), 0.3f)));
 
   camera cam;
-  cam.origin = vec3(0, 1.2f, 0.2f);
-  cam.orientation = axisAngle(vec3(1, 0, 0), radians(-45.f));
-
-  vec3 origin(0.f, 2.f, 1.50);
-  vec3  llcorner(-2.f, -1.f, -1.f);
-  vec3  horizontal(4.f, 0.f, 0.f);
-  vec3  vertical(0.f, 2.f, 0.f);
+  //cam.origin = vec3(0, 1.2f, 0.2f);
+  //cam.orientation = axisAngle(vec3(1, 0, 0), radians(-45.f));
 
 
   for (unsigned j = 0; j < h; j++) {

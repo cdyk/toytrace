@@ -19,6 +19,7 @@ bool sphere::intersect(const ray& r, float t_min, float t_max, intersection& rec
       rec.t = t;
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - center);
+      rec.mat = mat;
       return true;
     }
     t = (-b + std::sqrt(disc)) / a;
@@ -26,6 +27,7 @@ bool sphere::intersect(const ray& r, float t_min, float t_max, intersection& rec
       rec.t = t;
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - center);
+      rec.mat = mat;
       return true;
     }
   }

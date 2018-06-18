@@ -37,6 +37,12 @@ inline vec3 operator*(const float a, const vec3& b) { return vec3(a*b.x, a*b.y, 
 
 inline float dot(const vec3& a, const vec3& b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
 
+inline vec3 reflect(const vec3& v, const vec3& n)
+{
+  // v points towards surface, results points away.
+  return v - 2 * dot(v, n)*n;
+}
+
 inline vec3 normalize(const vec3& x) {
   auto l = dot(x, x);
   auto s = l < std::numeric_limits<float>::epsilon() ? 0.f : 1.f / std::sqrt(l);

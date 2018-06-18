@@ -22,6 +22,9 @@
     <ClCompile Include="..\src\intersectable.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\material.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -55,6 +58,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\src\camera.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\material.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
