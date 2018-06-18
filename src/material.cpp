@@ -17,6 +17,26 @@ namespace {
     return p;
   }
 
+  bool refract(vec3& refracted, const vec3& v, const vec3& n, float ni_over_nt)
+  {
+    vec3 w = normalize(v);
+    float dt = dot(w, n);
+    float discriminant = 1.f - ni_over_nt * ni_over_nt * (1.f - dt * dt);
+    if (0.f < discriminant) {
+      refracted = ni_over_nt * (w - dt * n) - std::sqrt(discriminant) * n;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  float schlick(float cosine, float ref_idx)
+  {
+    float r0 = (1 - ref_idx) / (1 + ref_idx);
+    r0 = r0 * r0;
+    return r0 + (1 - r0)*std::pow(1 - cosine, 5);
+  }
 
 }
 
@@ -41,3 +61,46 @@ bool metal::scatter(ray& scattered,
   attenuation = albedo;
   return 0 < dot(scattered.dir, hit.n);
 }
+
+
+bool dielectric::scatter(ray& scattered,
+                         vec3& attenuation,
+                         const ray& r_in,
+                         const intersection& hit) const
+{
+  vec3 outward_n;
+  float ni_over_nt;
+  float cosine;
+  if (0 < dot(r_in.dir, hit.n)) {
+    outward_n = -hit.n;
+    ni_over_nt = ref_idx;
+    cosine = ref_idx * dot(r_in.dir, hit.n) / length(r_in.dir);
+  }
+  else {
+    outward_n = hit.n;
+    ni_over_nt = 1.f / ref_idx;
+    cosine = -dot(r_in.dir, hit.n) / length(r_in.dir);
+  }
+
+  attenuation = vec3(1, 1, 1);
+
+  float reflect_prob;
+  vec3 refracted;
+  if (refract(refracted, r_in.dir, outward_n, ni_over_nt)) {
+    reflect_prob = schlick(cosine, ref_idx);
+  }
+  else {
+    reflect_prob = 1.f;
+  }
+
+  if (frand() < reflect_prob) {
+    scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n));
+  }
+  else {
+    scattered = ray(hit.p, refracted);
+  }
+
+
+  return true;
+}
+

@@ -12,6 +12,8 @@ struct vec3
 
   vec3 operator-(const vec3& b) const { return vec3(x - b.x, y - b.y, z - b.z); }
 
+  vec3 operator-() const { return vec3(-x, -y, -z); }
+
   vec3 operator*(const vec3& b) const { return vec3(x * b.x, y * b.y, z * b.z); }
 
   const float& operator[](unsigned i) const { return data[i]; }
@@ -36,6 +38,11 @@ struct vec3
 inline vec3 operator*(const float a, const vec3& b) { return vec3(a*b.x, a*b.y, a*b.z); }
 
 inline float dot(const vec3& a, const vec3& b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+
+inline float length(const vec3& v)
+{
+  return std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
 
 inline vec3 reflect(const vec3& v, const vec3& n)
 {

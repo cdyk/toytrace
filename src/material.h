@@ -40,3 +40,16 @@ public:
   float fuzz;
 
 };
+
+class dielectric : public material
+{
+public:
+  dielectric(float ref_idx) : ref_idx(ref_idx) {}
+
+  virtual bool scatter(ray& scattered,
+                       vec3& attenuation,
+                       const ray& r_in,
+                       const intersection& hit) const override;
+
+  float ref_idx;
+};

@@ -60,7 +60,8 @@ int main(int argc, char** argv)
   world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f))));
   world->items.push_back(new sphere(vec3(0, -100.5, -1), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f))));
   world->items.push_back(new sphere(vec3(1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.6f)));
-  world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f), 0.3f)));
+  world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new dielectric(1.5f)));
+  world->items.push_back(new sphere(vec3(-1, 0, -1), -0.45f, new dielectric(1.5f)));
 
   camera cam;
   //cam.origin = vec3(0, 1.2f, 0.2f);
