@@ -1,5 +1,6 @@
 #pragma once
 #include "ray.h"
+#include "quat.h"
 
 class camera
 {
@@ -15,12 +16,13 @@ public:
 
   ray getRay(float u, float v)
   {
-    return ray(origin, llcorner + u * horizontal + v * vertical);
+    return ray(origin, transform(orientation, llcorner + u * horizontal + v * vertical));
   }
 
   vec3 origin;
+  quat orientation;
+
   vec3 llcorner;
   vec3 horizontal;
   vec3 vertical;
-
 };

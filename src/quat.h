@@ -6,21 +6,49 @@
 
 struct quat
 {
-  quat() { data[0] = 1.f; data[1] = 0.f; data[1] = 0.f; data[2] = 0.f; }
-  quat(const vec3& v, const float w) { data[0] = v.x;  data[1] = v.y;  data[2] = v.z; data[3] = w; }
+  quat() : x(0), y(0), z(0), w(1) { }
+  quat(const vec3& v, const float w) : v(v), s(w) { }
+  quat(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+  union {
+    float data[4];
+    struct {
+      vec3 v;
+      float s;
+    };
+    struct {
+      float x;
+      float y;
+      float z;
+      float w;
+    };
 
-  float data[4];
+  };
 };
+
+quat conjugate(const quat& q)
+{
+  return quat(-q.x, -q.y, -q.z, q.w);
+}
 
 quat operator*(const quat& a, const quat& b)
 {
   return quat(
-    vec3(a.data[3] * b.data[0] + b.data[3] * a.data[0] + a.data[1] * b.data[2] - b.data[1] * a.data[2],
-         a.data[3] * b.data[1] + b.data[3] * a.data[1] + b.data[0] * a.data[2] - a.data[0] * b.data[2],
-         a.data[3] * b.data[2] + b.data[3] * a.data[2] + a.data[0] * b.data[1] - b.data[0] * a.data[1]),
-    a.data[3] * b.data[3] - (a.data[0] * b.data[0] + a.data[1] * b.data[1] + a.data[2] * b.data[2])
+    a.w * b.x + b.w * a.x + a.y * b.z - b.y * a.z,
+    a.w * b.y + b.w * a.y + b.x * a.z - a.x * b.z,
+    a.w * b.z + b.w * a.z + a.x * b.y - b.x * a.y,
+    a.w * b.w - (a.x * b.x + a.y * b.y + a.z * b.z)
   );
 }
+
+vec3 transform(const quat & q, const vec3& v)
+{
+  //return (q*(quat(v, 0)*conjugate(q))).v;
+  auto c = q.w;
+  auto qq = q.x*q.x + q.y*q.y + q.z*q.z;
+  auto vq = v.x*q.x + v.y*q.y + v.z*q.z;
+  return (c*c - qq) * v + (2.f*vq)*q.v + (2.f*c)*cross(q.v, v);
+}
+
 
 quat normalize(const quat& q)
 {
@@ -42,6 +70,7 @@ quat normalize(const quat& q)
 }
 
 // n assumed to be normalized
+// positive angle is CCW when n points towards the viewer
 quat axisAngle(const vec3& n, const float theta)
 {
   const auto s = std::sin(0.5f * theta);

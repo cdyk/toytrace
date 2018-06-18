@@ -5,6 +5,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
+#include "camera.h"
 #include <cstdlib>
 
 namespace {
@@ -43,10 +44,10 @@ int main(int argc, char** argv)
   world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f));
   world->items.push_back(new sphere(vec3(0, -100.5, -2), 100.f));
 
-  vec3 llcorner(-2.f, -1.f, -1.f);
-  vec3 horizontal(4.f, 0.f, 0.f);
-  vec3 vertical(0.f, 2.f, 0.f);
-  vec3 origin(0.f, 0.f, 0.f);
+  camera cam;
+  cam.origin = vec3(0, 0.5, 0.0);
+  //
+  cam.orientation = axisAngle(vec3(1, 0, 0), radians(-60.f));
 
   for (unsigned j = 0; j < h; j++) {
     for (unsigned i = 0; i < w; i++) {
@@ -56,7 +57,9 @@ int main(int argc, char** argv)
         auto u = float(i + frand()) / float(w);
         auto v = float(j + frand()) / float(h);
 
-        ray r(origin, llcorner + u * horizontal + v * vertical);
+        auto r = cam.getRay(u, v);
+
+        //ray r(origin, llcorner + u * horizontal + v * vertical);
         col = col + color(r, world);
       }
       col = (1.f / s)*col;
