@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 100;
-  const unsigned s = 5;
+  const unsigned s = 100;
 
   uint8_t image[3 * w * h];
 

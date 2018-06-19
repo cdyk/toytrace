@@ -20,8 +20,8 @@ public:
   vec3 origin;
   quat orientation;
 
-  float aperture = 2.f;
-  float focus_dist = 1.f;
+  float lens_radius;
+  float focus_dist;
 
   float half_width;
   float half_height;
