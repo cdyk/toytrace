@@ -45,6 +45,56 @@ namespace {
     return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
   }
 
+  intersectable* create_world_random()
+  {
+    int n = 500;
+
+    auto * world = new intersectable_container();
+
+    world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5f, 0.5f, 0.5f))));
+
+    for (int a = -11; a < 11; a++) {
+      for (int b = -11; b < 11; b++) {
+        float choose_mat = frand();
+        vec3 center(a + 0.9f*frand(), 0.2f, b + 0.9f*frand());
+        if (0.9f < distance(center, vec3(4, 0.2f, 0))) {
+
+          if (choose_mat < 0.8) {
+            vec3 albedo(frand()*frand(), frand()*frand(), frand()*frand());
+            world->items.push_back(new sphere(center, 0.2f, new lambertian(albedo)));
+          }
+          else if (choose_mat < 0.95f) {
+            vec3 albedo(0.5f + 0.5f*frand(), 0.5f + 0.5f*frand(), 0.5f + 0.5f*frand());
+            world->items.push_back(new sphere(center, 0.2f, new metal(albedo, 0.5f*frand())));
+          }
+          else {
+            world->items.push_back(new sphere(center, 0.2f, new dielectric(1.5f)));
+          }
+        }
+      }
+    }
+
+    world->items.push_back(new sphere(vec3(0, 1, 0), 1, new dielectric(1.5f)));
+    world->items.push_back(new sphere(vec3(-4, 1, 0), 1, new lambertian(vec3(0.4f, 0.2f, 0.1f))));
+    world->items.push_back(new sphere(vec3(4, 1, 0), 1, new metal(vec3(0.7f, 0.6f, 0.5f), 0.0f)));
+
+    return world;
+  }
+
+  intersectable* create_world_simple()
+  {
+    auto * world = new intersectable_container();
+
+    world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f))));
+    world->items.push_back(new sphere(vec3(0, -100.5, -1), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f))));
+    world->items.push_back(new sphere(vec3(1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.6f)));
+    world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new dielectric(1.5f)));
+    world->items.push_back(new sphere(vec3(-1, 0, -1), -0.45f, new dielectric(1.5f)));
+
+    return world;
+  }
+
+
 }
 
 int main(int argc, char** argv)
@@ -52,20 +102,15 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 100;
-  const unsigned s = 100;
+  const unsigned s = 10;
 
   uint8_t image[3 * w * h];
 
-  auto * world = new intersectable_container();
-  world->items.push_back(new sphere(vec3(0, 0, -1), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f))));
-  world->items.push_back(new sphere(vec3(0, -100.5, -1), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f))));
-  world->items.push_back(new sphere(vec3(1, 0, -1), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.6f)));
-  world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new dielectric(1.5f)));
-  world->items.push_back(new sphere(vec3(-1, 0, -1), -0.45f, new dielectric(1.5f)));
-
+  auto * world = create_world_random();
+  
   camera cam;
-  cam.setLens(20.f, float(w) / float(h), 2.f);
-  cam.lookAt(vec3(3, 3, 2), vec3(0, 0, -1));
+  cam.setLens(20.f, float(w) / float(h), 0.1f);
+  cam.lookAt(vec3(13, 2, 3), vec3(0, 0, 0));
 
   for (unsigned j = 0; j < h; j++) {
     for (unsigned i = 0; i < w; i++) {
@@ -85,6 +130,7 @@ int main(int argc, char** argv)
       image[3 * (j*w + i) + 1] = uint8_t(255.f*saturate(std::sqrt(col.g)));
       image[3 * (j*w + i) + 2] = uint8_t(255.f*saturate(std::sqrt(col.b)));
     }
+    fprintf(stderr, "%d of %d\n", j, h);
   }
 
 
