@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 100;
-  const unsigned s = 100;
+  const unsigned s = 5;
 
   uint8_t image[3 * w * h];
 
@@ -64,9 +64,8 @@ int main(int argc, char** argv)
   world->items.push_back(new sphere(vec3(-1, 0, -1), -0.45f, new dielectric(1.5f)));
 
   camera cam;
-  //cam.origin = vec3(0, 1.2f, 0.2f);
-  //cam.orientation = axisAngle(vec3(1, 0, 0), radians(-45.f));
-
+  cam.setLens(20.f, float(w) / float(h), 2.f);
+  cam.lookAt(vec3(3, 3, 2), vec3(0, 0, -1));
 
   for (unsigned j = 0; j < h; j++) {
     for (unsigned i = 0; i < w; i++) {
@@ -81,7 +80,6 @@ int main(int argc, char** argv)
         col = col + color(r, world, 20);
       }
       col = (1.f / s)*col;
-      
 
       image[3 * (j*w + i) + 0] = uint8_t(255.f*saturate(std::sqrt(col.r)));
       image[3 * (j*w + i) + 1] = uint8_t(255.f*saturate(std::sqrt(col.g)));

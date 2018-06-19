@@ -6,23 +6,23 @@ class camera
 {
 public:
 
-  camera() :
-    origin(0.f, 0.f, 0.f),
-    llcorner(-2.f, -1.f, -1.f),
-    horizontal(4.f, 0.f, 0.f),
-    vertical(0.f, 2.f, 0.f)
+  camera()
   {
+    setLens(120.f, 1.f, 2.f);
   }
 
-  ray getRay(float u, float v)
-  {
-    return ray(origin, transform(orientation, llcorner + u * horizontal + v * vertical));
-  }
+  void lookAt(const vec3& source, const vec3& target, const vec3& = vec3(0,1,0));
+
+  void setLens(float vfov, float aspect, float aperture);
+
+  ray getRay(float u, float v);
 
   vec3 origin;
   quat orientation;
 
-  vec3 llcorner;
-  vec3 horizontal;
-  vec3 vertical;
+  float aperture = 2.f;
+  float focus_dist = 1.f;
+
+  float half_width;
+  float half_height;
 };

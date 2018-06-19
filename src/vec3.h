@@ -44,6 +44,11 @@ inline float length(const vec3& v)
   return std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
+inline float distance(const vec3& a, const vec3& b)
+{
+  return length(a - b);
+}
+
 inline vec3 reflect(const vec3& v, const vec3& n)
 {
   // v points towards surface, results points away.

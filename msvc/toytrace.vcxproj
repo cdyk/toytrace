@@ -117,10 +117,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\intersectable.cpp" />
     <ClCompile Include="..\src\lib_impl.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\material.cpp" />
+    <ClCompile Include="..\src\quat.cpp" />
     <ClCompile Include="..\src\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
