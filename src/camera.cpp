@@ -49,7 +49,7 @@ void camera::lookAt(const vec3& source, const vec3& target, const vec3& up)
   
 }
 
-ray camera::getRay(float u, float v)
+ray camera::getRay(float u, float v) const
 {
   vec3 dir(focus_dist*half_width*(2.f*u - 1.f),
            focus_dist*half_height*(2.f*v - 1.f),

@@ -15,7 +15,7 @@ public:
 
   void setLens(float vfov, float aspect, float aperture);
 
-  ray getRay(float u, float v);
+  ray getRay(float u, float v) const;
 
   vec3 origin;
   quat orientation;

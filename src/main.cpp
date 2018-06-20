@@ -1,13 +1,16 @@
 #include "stb_image_write.h"
+
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
+#include <thread>
+
 #include "funcs.h"
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
-#include <cstdlib>
 
 namespace {
 
@@ -25,7 +28,7 @@ namespace {
     return p;
   }
 
-  vec3 color(const ray& r, intersectable* world, unsigned depth)
+  vec3 color(const ray& r, const intersectable* world, unsigned depth)
   {
     intersection hit;
     if (world->intersect(r, 0.001f, std::numeric_limits<float>::max(), hit)) {
@@ -95,24 +98,8 @@ namespace {
   }
 
 
-}
-
-int main(int argc, char** argv)
-{
-  const char* filename = "output.png";
-  const unsigned w = 200;
-  const unsigned h = 100;
-  const unsigned s = 10;
-
-  uint8_t image[3 * w * h];
-
-  auto * world = create_world_random();
-  
-  camera cam;
-  cam.setLens(20.f, float(w) / float(h), 0.1f);
-  cam.lookAt(vec3(13, 2, 3), vec3(0, 0, 0));
-
-  for (unsigned j = 0; j < h; j++) {
+  void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const camera* cam, const intersectable* world, unsigned j)
+  {
     for (unsigned i = 0; i < w; i++) {
 
       vec3 col;
@@ -120,7 +107,7 @@ int main(int argc, char** argv)
         auto u = float(i + frand()) / float(w);
         auto v = float(j + frand()) / float(h);
 
-        auto r = cam.getRay(u, v);
+        auto r = cam->getRay(u, v);
 
         col = col + color(r, world, 20);
       }
@@ -130,13 +117,46 @@ int main(int argc, char** argv)
       image[3 * (j*w + i) + 1] = uint8_t(255.f*saturate(std::sqrt(col.g)));
       image[3 * (j*w + i) + 2] = uint8_t(255.f*saturate(std::sqrt(col.b)));
     }
-    fprintf(stderr, "%d of %d\n", j, h);
+
   }
 
 
-  vec3 a, b;
+}
 
-  auto t = a - b;
+int main(int argc, char** argv)
+{
+  const char* filename = "output.png";
+  const unsigned w = 200;
+  const unsigned h = 100;
+  const unsigned s = 100;
+
+  uint8_t image[3 * w * h];
+
+  auto * world = create_world_random();
+  
+  camera cam;
+  cam.setLens(20.f, float(w) / float(h), 0.1f);
+  cam.lookAt(vec3(13, 2, 3), vec3(0, 0, 0));
+
+  auto T = std::thread::hardware_concurrency();
+
+  auto f = [&](unsigned o) {
+    for (unsigned j = o; j < h; j += T) {
+      renderLine(image, w, h, s, &cam, world, j);
+    }
+  };
+
+  std::vector<std::thread> threads;
+  for (unsigned o = 1; o < T; o++) {
+    threads.emplace_back(std::thread(f, o));
+  }
+
+  for (unsigned j = 0; j < h; j+=T) {
+    renderLine(image, w, h, s, &cam, world, j);
+    fprintf(stderr, "%d of %d\n", j, h);
+  }
+
+  for (auto & t : threads) t.join();
 
   stbi_flip_vertically_on_write(1);
   if (stbi_write_png(filename, w, h, 3, image, 3*w)) {
