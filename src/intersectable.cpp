@@ -15,3 +15,12 @@ bool intersectable_container::intersect(const ray& r, float t_min, float t_max, 
   }
   return hit_anything;
 }
+
+aabb intersectable_container::bounding_box(float time0, float time1) const
+{
+  aabb rv;
+  for (auto & item : items) {
+    rv.include(item->bounding_box(time0, time1));
+  }
+  return rv;
+}

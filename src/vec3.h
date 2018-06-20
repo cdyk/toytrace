@@ -6,6 +6,8 @@ struct vec3
 {
   vec3() { data[0] = 0.f; data[1] = 0.f; data[2] = 0.f; }
 
+  vec3(float e) : x(e), y(e), z(e) {}
+
   vec3(float e0, float e1, float e2) { data[0] = e0; data[1] = e1; data[2] = e2; }
 
   vec3 operator+(const vec3& b) const { return vec3(x + b.x, y + b.y, z + b.z); }
@@ -15,6 +17,8 @@ struct vec3
   vec3 operator-() const { return vec3(-x, -y, -z); }
 
   vec3 operator*(const vec3& b) const { return vec3(x * b.x, y * b.y, z * b.z); }
+
+  vec3 operator/(const vec3& b) const { return vec3(x / b.x, y / b.y, z / b.z); }
 
   const float& operator[](unsigned i) const { return data[i]; }
 

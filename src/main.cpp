@@ -12,6 +12,7 @@
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "bvh.h"
 
 namespace {
 
@@ -91,7 +92,7 @@ namespace {
 
     auto * set_up = new setup;
     set_up->camera = new camera(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20.f, aspect, 0.1f, 0, 1);
-    set_up->world = world;
+    set_up->world = new bvh(world->items, 0, 1);
 
     return set_up;
   }
@@ -148,8 +149,16 @@ int main(int argc, char** argv)
 
   uint8_t image[3 * w * h];
 
+  auto start = std::chrono::steady_clock::now();
+
   auto * setup = create_world_random(float(w) / float(h));
-  
+
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+  fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());
+
+
+  start = std::chrono::steady_clock::now();
+
   auto T = std::thread::hardware_concurrency();
 
   auto f = [&](unsigned o) {
@@ -158,7 +167,6 @@ int main(int argc, char** argv)
     }
   };
 
-  auto start = std::chrono::steady_clock::now();
 
   std::vector<std::thread> threads;
   for (unsigned o = 1; o < T; o++) {
@@ -172,9 +180,9 @@ int main(int argc, char** argv)
 
   for (auto & t : threads) t.join();
 
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+  duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
 
-  fprintf(stderr, "Elapsed time %f\n", (1.0 / 1000.0)*duration.count());
+  fprintf(stderr, "Render elapsed time %f\n", (1.0 / 1000.0)*duration.count());
 
   stbi_flip_vertically_on_write(1);
   if (stbi_write_png(filename, w, h, 3, image, 3 * w) == 0) {
