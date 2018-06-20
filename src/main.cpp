@@ -48,11 +48,18 @@ namespace {
     return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
   }
 
-  intersectable* create_world_random()
+  struct setup
   {
+    camera* camera;
+    intersectable* world;
+  };
+
+  setup* create_world_random(float aspect)
+  {
+
     int n = 500;
 
-    auto * world = new intersectable_container();
+    auto * world =  new intersectable_container();
 
     world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5f, 0.5f, 0.5f))));
 
@@ -64,7 +71,7 @@ namespace {
 
           if (choose_mat < 0.8) {
             vec3 albedo(frand()*frand(), frand()*frand(), frand()*frand());
-            world->items.push_back(new sphere(center, 0.2f, new lambertian(albedo)));
+            world->items.push_back(new moving_sphere(center, center + vec3(0, 0.5f*frand(), 0), 0, 1, 0.2f, new lambertian(albedo)));
           }
           else if (choose_mat < 0.95f) {
             vec3 albedo(0.5f + 0.5f*frand(), 0.5f + 0.5f*frand(), 0.5f + 0.5f*frand());
@@ -81,10 +88,14 @@ namespace {
     world->items.push_back(new sphere(vec3(-4, 1, 0), 1, new lambertian(vec3(0.4f, 0.2f, 0.1f))));
     world->items.push_back(new sphere(vec3(4, 1, 0), 1, new metal(vec3(0.7f, 0.6f, 0.5f), 0.0f)));
 
-    return world;
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20.f, aspect, 0.1f, 0, 1);
+    set_up->world = world;
+
+    return set_up;
   }
 
-  intersectable* create_world_simple()
+  setup* create_world_simple(float aspect)
   {
     auto * world = new intersectable_container();
 
@@ -94,11 +105,15 @@ namespace {
     world->items.push_back(new sphere(vec3(-1, 0, -1), 0.5f, new dielectric(1.5f)));
     world->items.push_back(new sphere(vec3(-1, 0, -1), -0.45f, new dielectric(1.5f)));
 
-    return world;
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), 120.f, aspect, 0.1f, 0, 1);
+    set_up->world = world;
+
+    return set_up;
   }
 
 
-  void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const camera* cam, const intersectable* world, unsigned j)
+  void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
     for (unsigned i = 0; i < w; i++) {
 
@@ -107,9 +122,9 @@ namespace {
         auto u = float(i + frand()) / float(w);
         auto v = float(j + frand()) / float(h);
 
-        auto r = cam->getRay(u, v);
+        auto r = set_up->camera->getRay(u, v);
 
-        col = col + color(r, world, 20);
+        col = col + color(r, set_up->world, 20);
       }
       col = (1.f / s)*col;
 
@@ -132,17 +147,13 @@ int main(int argc, char** argv)
 
   uint8_t image[3 * w * h];
 
-  auto * world = create_world_random();
+  auto * setup = create_world_random(float(w) / float(h));
   
-  camera cam;
-  cam.setLens(20.f, float(w) / float(h), 0.1f);
-  cam.lookAt(vec3(13, 2, 3), vec3(0, 0, 0));
-
   auto T = std::thread::hardware_concurrency();
 
   auto f = [&](unsigned o) {
     for (unsigned j = o; j < h; j += T) {
-      renderLine(image, w, h, s, &cam, world, j);
+      renderLine(image, w, h, s, setup, j);
     }
   };
 
@@ -152,7 +163,7 @@ int main(int argc, char** argv)
   }
 
   for (unsigned j = 0; j < h; j+=T) {
-    renderLine(image, w, h, s, &cam, world, j);
+    renderLine(image, w, h, s, setup, j);
     fprintf(stderr, "%d of %d\n", j, h);
   }
 

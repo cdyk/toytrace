@@ -4,7 +4,7 @@
 struct ray
 {
   ray() {}
-  ray(const vec3& ori, const vec3& dir) : ori(ori), dir(dir)
+  ray(const vec3& ori, const vec3& dir, float time) : ori(ori), dir(dir), time(time)
   {}
 
 
@@ -12,4 +12,5 @@ struct ray
 
   vec3 ori;
   vec3 dir;
+  float time;
 };

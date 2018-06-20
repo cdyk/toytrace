@@ -57,5 +57,7 @@ ray camera::getRay(float u, float v) const
 
   vec3 offset = transform(orientation, lens_radius * random_in_unit_disc());
 
-  return ray(origin + offset, transform(orientation, dir) - offset);
+  auto time = time0 + (time1 - time0)*frand();
+
+  return ray(origin + offset, transform(orientation, dir) - offset, time);
 }

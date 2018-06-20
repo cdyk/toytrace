@@ -46,7 +46,7 @@ bool lambertian::scatter(ray& scattered,
                          const intersection& hit) const
 {
   vec3 target = hit.p + hit.n + random_in_unit_sphere();
-  scattered = ray(hit.p, target - hit.p);
+  scattered = ray(hit.p, target - hit.p, r_in.time);
   attenuation = albedo;
   return true;
 }
@@ -57,7 +57,7 @@ bool metal::scatter(ray& scattered,
                     const ray& r_in,
                     const intersection& hit) const
 {
-  scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n) + fuzz*random_in_unit_sphere());
+  scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n) + fuzz*random_in_unit_sphere(), r_in.time);
   attenuation = albedo;
   return 0 < dot(scattered.dir, hit.n);
 }
@@ -94,10 +94,10 @@ bool dielectric::scatter(ray& scattered,
   }
 
   if (frand() < reflect_prob) {
-    scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n));
+    scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n), r_in.time);
   }
   else {
-    scattered = ray(hit.p, refracted);
+    scattered = ray(hit.p, refracted, r_in.time);
   }
 
 

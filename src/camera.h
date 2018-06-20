@@ -6,9 +6,13 @@ class camera
 {
 public:
 
-  camera()
+  camera() = delete;
+
+  camera(const vec3& source, const vec3& target, const vec3& up, float vfov, float aspect, float aperture, float time0, float time1)
+    : time0(time0), time1(time1)
   {
-    setLens(120.f, 1.f, 2.f);
+    setLens(vfov, aspect, aperture);
+    lookAt(source, target, up);
   }
 
   void lookAt(const vec3& source, const vec3& target, const vec3& = vec3(0,1,0));
@@ -19,10 +23,11 @@ public:
 
   vec3 origin;
   quat orientation;
-
+  float time0;
+  float time1;
+  
   float lens_radius;
   float focus_dist;
-
   float half_width;
   float half_height;
 };
