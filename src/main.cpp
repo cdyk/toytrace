@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
+#include <chrono>
 
 #include "funcs.h"
 #include "vec3.h"
@@ -157,6 +158,8 @@ int main(int argc, char** argv)
     }
   };
 
+  auto start = std::chrono::steady_clock::now();
+
   std::vector<std::thread> threads;
   for (unsigned o = 1; o < T; o++) {
     threads.emplace_back(std::thread(f, o));
@@ -169,11 +172,16 @@ int main(int argc, char** argv)
 
   for (auto & t : threads) t.join();
 
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+
+  fprintf(stderr, "Elapsed time %f\n", (1.0 / 1000.0)*duration.count());
+
   stbi_flip_vertically_on_write(1);
-  if (stbi_write_png(filename, w, h, 3, image, 3*w)) {
+  if (stbi_write_png(filename, w, h, 3, image, 3 * w) == 0) {
     fprintf(stderr, "Failed to write png file '%s'", filename);
     return -1;
   }
+
 
   return 0;
 }
