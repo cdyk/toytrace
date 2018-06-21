@@ -7,6 +7,8 @@ public:
 
   static float noise(const vec3& p);
 
+  static float turbulence(const vec3& p, unsigned octaves = 7);
+
 private:
 
   static struct shared_t

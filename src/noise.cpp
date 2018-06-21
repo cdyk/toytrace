@@ -70,5 +70,18 @@ float perlin::noise(const vec3& p)
     }
   }
 
-  return 0.5f*(acc + 1.f);
+  return acc;
+}
+
+float perlin::turbulence(const vec3& p, unsigned octaves)
+{
+  float acc = 0;
+  auto t = p;
+  float w = 1.f;
+  for (unsigned i = 0; i < octaves; i++) {
+    acc += w * noise(t);
+    w *= 0.5f;
+    t = 2.f*t;
+  }
+  return std::abs(acc);
 }
