@@ -42,6 +42,9 @@ float perlin::noise(const vec3& p)
   float u = p.x - i;
   float v = p.y - j;
   float w = p.z - k;
+  u = u * u*(3.f - 2.f*u);
+  v = v * v*(3.f - 2.f*v);
+  w = w * w*(3.f - 2.f*w);
 
   auto t000 = shared.ranfloat[shared.perm_x[(i + 0) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 0) & 255]];
   auto t001 = shared.ranfloat[shared.perm_x[(i + 1) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 0) & 255]];
