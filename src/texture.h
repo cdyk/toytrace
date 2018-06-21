@@ -1,5 +1,6 @@
 #pragma once
 #include "vec3.h"
+#include "noise.h"
 
 class texture
 {
@@ -31,4 +32,11 @@ public:
 
   texture* odd;
   texture* even;
+};
+
+class noise_texture : public texture
+{
+  virtual vec3 value(float u, float v, const vec3& p) const override { return perlin::noise(p) * vec3(1,1,1); }
+
+
 };

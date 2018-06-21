@@ -34,6 +34,9 @@
     <ClCompile Include="..\src\bvh.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\noise.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -79,6 +82,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\src\texture.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\noise.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

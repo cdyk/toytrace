@@ -128,6 +128,22 @@ namespace {
     return set_up;
   }
 
+  setup* two_perlin_spheres(float aspect)
+  {
+    texture * noise = new noise_texture();
+
+    auto * world = new intersectable_container();
+    world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(noise)));
+    world->items.push_back(new sphere(vec3(0, 2, 0), 2, new lambertian(noise)));
+
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20.f, aspect, 0.0f, 0, 1);
+    set_up->world = new bvh(world->items, 0, 1);
+
+    return set_up;
+  }
+
+
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
     for (unsigned i = 0; i < w; i++) {
@@ -156,8 +172,8 @@ namespace {
 int main(int argc, char** argv)
 {
   const char* filename = "output.png";
-  const unsigned w = 200;
-  const unsigned h = 100;
+  const unsigned w = 600;
+  const unsigned h = 300;
   const unsigned s = 100;
 
   uint8_t image[3 * w * h];
@@ -165,7 +181,9 @@ int main(int argc, char** argv)
   auto start = std::chrono::steady_clock::now();
 
   //auto * setup = create_world_random(float(w) / float(h));
-  auto * setup = two_spheres(float(w) / float(h));
+  //auto * setup = two_spheres(float(w) / float(h));
+  auto * setup = two_perlin_spheres
+  (float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());
