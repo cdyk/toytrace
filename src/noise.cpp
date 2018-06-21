@@ -19,15 +19,19 @@ namespace {
     }
     return p;
   }
+
+
 }
 
 perlin::shared_t perlin::shared;
 
 perlin::shared_t::shared_t()
 {
-  ranfloat = new float[256];
+  ranfloat = new vec3[256];
   for (unsigned i = 0; i < 256; i++) {
-    ranfloat[i] = (1.f / (1.f + RAND_MAX))*float(rand());
+    ranfloat[i] = normalize(vec3((2.f / (1.f + RAND_MAX))*float(rand()) - 1.f,
+                                 (2.f / (1.f + RAND_MAX))*float(rand()) - 1.f,
+                                 (2.f / (1.f + RAND_MAX))*float(rand()) - 1.f));
   }
   perm_x = create_permutation_table();
   perm_y = create_permutation_table();
@@ -36,35 +40,35 @@ perlin::shared_t::shared_t()
 
 float perlin::noise(const vec3& p)
 {
-  int i = floor(p.x);
-  int j = floor(p.y);
-  int k = floor(p.z);
+  int i = int(floor(p.x));
+  int j = int(floor(p.y));
+  int k = int(floor(p.z));
   float u = p.x - i;
   float v = p.y - j;
   float w = p.z - k;
-  u = u * u*(3.f - 2.f*u);
-  v = v * v*(3.f - 2.f*v);
-  w = w * w*(3.f - 2.f*w);
+  float uu = u * u*(3.f - 2.f*u);
+  float vv = v * v*(3.f - 2.f*v);
+  float ww = w * w*(3.f - 2.f*w);
 
-  auto t000 = shared.ranfloat[shared.perm_x[(i + 0) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 0) & 255]];
-  auto t001 = shared.ranfloat[shared.perm_x[(i + 1) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 0) & 255]];
-  auto t00 = (1.f - u)*t000 + u * t001;
+  vec3 c[2][2][2];
+  for (int kk = 0; kk < 2; kk++) {
+    for (int jj = 0; jj < 2; jj++) {
+      for (int ii = 0; ii < 2; ii++) {
+        c[kk][jj][ii] = shared.ranfloat[shared.perm_x[(i + ii) & 255] ^ shared.perm_y[(j + jj) & 255] ^ shared.perm_z[(k + kk) & 255]];
+      }
+    }
+  }
 
-  auto t010 = shared.ranfloat[shared.perm_x[(i + 0) & 255] ^ shared.perm_y[(j + 1) & 255] ^ shared.perm_z[(k + 0) & 255]];
-  auto t011 = shared.ranfloat[shared.perm_x[(i + 1) & 255] ^ shared.perm_y[(j + 1) & 255] ^ shared.perm_z[(k + 0) & 255]];
-  auto t01 = (1.f - u)*t010 + u * t011;
-  auto t0 = (1.f - v)*t00 + v * t01;
+  float acc = 0.f;
+  for (int kk = 0; kk < 2; kk++) {
+    for (int jj = 0; jj < 2; jj++) {
+      for (int ii = 0; ii < 2; ii++) {
+        vec3 dir(u - ii, v - jj, w - kk);
+        float t = dot(dir, c[kk][jj][ii]);
+        acc += (ii*uu + (1 - ii)*(1.f - uu)) * (jj*vv + (1 - jj)*(1.f - vv)) * (kk*ww + (1 - kk)*(1.f - ww)) * t;
+      }
+    }
+  }
 
-  auto t100 = shared.ranfloat[shared.perm_x[(i + 0) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 1) & 255]];
-  auto t101 = shared.ranfloat[shared.perm_x[(i + 1) & 255] ^ shared.perm_y[(j + 0) & 255] ^ shared.perm_z[(k + 1) & 255]];
-  auto t10 = (1.f - u)*t100 + u * t101;
-
-  auto t110 = shared.ranfloat[shared.perm_x[(i + 0) & 255] ^ shared.perm_y[(j + 1) & 255] ^ shared.perm_z[(k + 1) & 255]];
-  auto t111 = shared.ranfloat[shared.perm_x[(i + 1) & 255] ^ shared.perm_y[(j + 1) & 255] ^ shared.perm_z[(k + 1) & 255]];
-  auto t11 = (1.f - u)*t110 + u * t111;
-  auto t1 = (1.f - v)*t10 + v * t11;
-
-  auto t = (1.f - w)*t0 + w * t1;
-
-  return t;
+  return 0.5f*(acc + 1.f);
 }

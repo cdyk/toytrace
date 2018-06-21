@@ -12,7 +12,7 @@ private:
   static struct shared_t
   {
     shared_t();
-    float* ranfloat;
+    vec3* ranfloat;
     int* perm_x;
     int* perm_y;
     int* perm_z;
