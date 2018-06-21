@@ -87,5 +87,8 @@
     <ClInclude Include="..\src\noise.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\libraries\stb_image.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
