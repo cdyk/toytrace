@@ -25,8 +25,6 @@ bvh::bvh(const std::vector<intersectable*>& items, float t0, float t1, unsigned 
     return;
   }
 
-  // try all three axes and choose the axis where the aggregate volume of the two children are smallest?
-
   std::vector<sort_item> sort_items(N);
 
   for (unsigned i = 0; i < N; i++) {
