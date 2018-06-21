@@ -82,15 +82,15 @@ aabb moving_sphere::bounding_box(float tim0, float tim1) const
   auto c0 = (1.f - t0)*center0 + t0 * center1;
 
   auto t1 = (tim1 - time0) / (time1 - time0);
-  auto c1 = (1.f - t0)*center0 + t0 * center1;
+  auto c1 = (1.f - t1)*center0 + t1 * center1;
 
   vec3 min(c0.x < c1.x ? c0.x : c1.x,
-           c0.y < c1.y ? c0.x : c1.y,
-           c0.z < c1.z ? c0.x : c1.z);
+           c0.y < c1.y ? c0.y : c1.y,
+           c0.z < c1.z ? c0.z : c1.z);
 
   vec3 max(c0.x < c1.x ? c1.x : c0.x,
-           c0.y < c1.y ? c1.x : c0.y,
-           c0.z < c1.z ? c1.x : c0.z);
+           c0.y < c1.y ? c1.y : c0.y,
+           c0.z < c1.z ? c1.z : c0.z);
 
   return aabb(min - vec3(radius),
               max + vec3(radius));

@@ -58,9 +58,6 @@ namespace {
 
   setup* create_world_random(float aspect)
   {
-
-    int n = 500;
-
     auto * world =  new intersectable_container();
 
     world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5f, 0.5f, 0.5f))));

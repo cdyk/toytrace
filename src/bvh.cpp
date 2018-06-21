@@ -19,9 +19,13 @@ bvh::bvh(const std::vector<intersectable*>& items, float t0, float t1, unsigned 
 {
   unsigned N = unsigned(items.size());
   if (N == 1) {
+
     children[0] = items[0];
+    bbox = children[0]->bounding_box(t0, t1);
     return;
   }
+
+  // try all three axes and choose the axis where the aggregate volume of the two children are smallest?
 
   std::vector<sort_item> sort_items(N);
 
