@@ -130,7 +130,7 @@ namespace {
 
   setup* two_perlin_spheres(float aspect)
   {
-    texture * noise = new noise_texture();
+    texture * noise = new noise_texture(5.f);
 
     auto * world = new intersectable_container();
     world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(noise)));

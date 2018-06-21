@@ -36,7 +36,12 @@ public:
 
 class noise_texture : public texture
 {
-  virtual vec3 value(float u, float v, const vec3& p) const override { return perlin::noise(p) * vec3(1,1,1); }
+public:
+  noise_texture() = delete;
 
+  noise_texture(float scale) : scale(scale) {}
 
+  virtual vec3 value(float u, float v, const vec3& p) const override { return perlin::noise(scale * p) * vec3(1,1,1); }
+
+  float scale;
 };
