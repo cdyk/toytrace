@@ -47,7 +47,7 @@ bool lambertian::scatter(ray& scattered,
 {
   vec3 target = hit.p + hit.n + random_in_unit_sphere();
   scattered = ray(hit.p, target - hit.p, r_in.time);
-  attenuation = albedo;
+  attenuation = albedo->value(0, 0, hit.p);
   return true;
 }
 

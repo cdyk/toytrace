@@ -78,5 +78,8 @@
     <ClInclude Include="..\src\bvh.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\texture.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

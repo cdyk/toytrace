@@ -1,5 +1,6 @@
 #pragma once
 #include "ray.h"
+#include "texture.h"
 
 struct intersection;
 
@@ -16,14 +17,14 @@ public:
 class lambertian : public material
 {
 public:
-  lambertian(const vec3& albedo) : albedo(albedo) {}
+  lambertian(texture* albedo) : albedo(albedo) {}
 
   virtual bool scatter(ray& scattered,
                        vec3& attenuation,
                        const ray& r_in,
                        const intersection& hit) const override;
 
-  vec3 albedo;
+  texture* albedo;
 };
 
 class metal : public material
