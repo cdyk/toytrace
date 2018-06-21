@@ -1,8 +1,10 @@
+#include "stb_image.h"
 #include "stb_image_write.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cassert>
 #include <thread>
 #include <chrono>
 
@@ -143,6 +145,26 @@ namespace {
     return set_up;
   }
 
+  setup* two_spheres_earth(float aspect)
+  {
+    int w, h, nn;
+
+    unsigned char* tex_data = stbi_load("earth.jpg", &w, &h, &nn, 3);
+    assert(tex_data);
+    texture * map = new image_texture_spheremap(tex_data, w, h);
+    texture * noise = new noise_texture(5.f);
+
+    auto * world = new intersectable_container();
+    world->items.push_back(new sphere(vec3(0, -1001, 0), 1000, new lambertian(noise)));
+    world->items.push_back(new sphere(vec3(0, 0, 0), 1, new lambertian(map)));
+
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(8, 0, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20.f, aspect, 0.0f, 0, 1);
+    set_up->world = new bvh(world->items, 0, 1);
+
+    return set_up;
+  }
+
 
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
@@ -182,8 +204,8 @@ int main(int argc, char** argv)
 
   //auto * setup = create_world_random(float(w) / float(h));
   //auto * setup = two_spheres(float(w) / float(h));
-  auto * setup = two_perlin_spheres
-  (float(w) / float(h));
+  //auto * setup = two_perlin_spheres(float(w) / float(h));
+  auto * setup = two_spheres_earth(float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());

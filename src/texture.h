@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 #include "vec3.h"
 #include "noise.h"
 
@@ -48,4 +50,52 @@ public:
   }
 
   float scale;
+};
+
+class image_texture : public texture
+{
+public:
+  image_texture() = delete;
+
+  image_texture(uint8_t* pixels_rgb, unsigned w, unsigned h) : pixels_rgb(pixels_rgb), w(w), h(h) {}
+
+  virtual vec3 value(float u, float v, const vec3& p) const override
+  {
+    u = u < 0.f ? 0.f : u;
+    v = v < 0.f ? 0.f : v;
+    auto i = unsigned(u*w);
+    i = i < w ? i : w - 1;
+    auto j = unsigned(v*h);
+    j = j < h ? j : h - 1;
+
+    auto * rgb = pixels_rgb + 3 * (j*w + i);
+    constexpr auto s = 1.f / 255.f;
+    return vec3(s*rgb[0], s*rgb[1], s*rgb[2]);
+  }
+
+  uint8_t * pixels_rgb;
+  unsigned w;
+  unsigned h;
+};
+
+class image_texture_spheremap : public image_texture
+{
+public:
+  image_texture_spheremap(uint8_t* pixels_rgb, unsigned w, unsigned h) : image_texture(pixels_rgb, w, h) {}
+
+  virtual vec3 value(float u, float v, const vec3& p) const override
+  {
+    constexpr float pi = float(3.14159265358979323846264338327950288);
+    constexpr float pi_over_two = float(3.14159265358979323846264338327950288/2.0);
+    constexpr float one_over_pi = float(1.0 / (3.14159265358979323846264338327950288));
+    constexpr float one_over_two_pi = float(1.0 / (2 * 3.14159265358979323846264338327950288));
+
+    float phi = atan2(p.z, p.x);
+    float theta = asin(p.y);
+    return image_texture::value(1.f - one_over_two_pi * (phi + pi),
+                                1.f - one_over_pi*(theta + pi_over_two),
+                                p);
+  }
+
+
 };
