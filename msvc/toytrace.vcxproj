@@ -117,6 +117,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\box.cpp" />
     <ClCompile Include="..\src\bvh.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\intersectable.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="..\libraries\stb_image.h" />
     <ClInclude Include="..\libraries\stb_image_write.h" />
     <ClInclude Include="..\src\aabb.h" />
+    <ClInclude Include="..\src\box.h" />
     <ClInclude Include="..\src\bvh.h" />
     <ClInclude Include="..\src\camera.h" />
     <ClInclude Include="..\src\funcs.h" />

@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "material.h"
 #include "bvh.h"
+#include "box.h"
 
 namespace {
 
@@ -202,6 +203,9 @@ namespace {
     world->items.push_back(new normal_flip(new xz_rect(vec2(0, 0), vec2(555, 555), 555, white)));
     world->items.push_back(new normal_flip(new xy_rect(vec2(0, 0), vec2(555, 555), 555, white)));
 
+    world->items.push_back(new box(vec3(130, 0, 65), vec3(295, 165, 230), white));
+    world->items.push_back(new box(vec3(265, 0, 295), vec3(430, 330, 460), white));
+
     auto * set_up = new setup;
     set_up->camera = new camera(vec3(278, 278, -800), vec3(278, 278, 0), vec3(0, 1, 0), 40.f, aspect, 0.0f, 0, 1);
     set_up->camera->orientation = axisAngle(vec3(0, 1, 0), float(3.14159265358979323846264338327950288)); // exactly 180 deg rotation not handled yet.
@@ -240,7 +244,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 600;
   const unsigned h = 300;
-  const unsigned s = 1000;
+  const unsigned s = 100;
 
   uint8_t image[3 * w * h];
 

@@ -43,6 +43,9 @@
     <ClCompile Include="..\src\vec.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\box.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -100,6 +103,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\src\vec2.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\box.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
