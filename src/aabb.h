@@ -1,6 +1,6 @@
 #pragma once
 #include "ray.h"
-#include <climits>
+#include <cfloat>
 
 struct aabb
 {

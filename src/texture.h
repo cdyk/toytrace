@@ -1,13 +1,15 @@
 #pragma once
 #include <cstdint>
+#include <cmath>
 
+#include "vec2.h"
 #include "vec3.h"
 #include "noise.h"
 
 class texture
 {
 public:
-  virtual vec3 value(float u, float v, const vec3& p) const = 0;
+  virtual vec3 value(const vec2& t, const vec3& p) const = 0;
 };
 
 class constant_texture : public texture
@@ -17,7 +19,7 @@ public:
 
   constant_texture(const vec3& color) : color(color) {}
 
-  virtual vec3 value(float u, float v, const vec3& p) const override { return color; }
+  virtual vec3 value(const vec2& t, const vec3& p) const override { return color; }
 
   vec3 color;
 };
@@ -28,8 +30,8 @@ public:
   checker_texture() = delete;
   checker_texture(texture* odd, texture* even) : odd(odd), even(even) {}
 
-  virtual vec3 value(float u, float v, const vec3& p) const override {
-    if (((int)std::floor(3.f*p.x) ^ (int)std::floor(3.f*p.y) ^ (int)std::floor(3.f*p.z)) & 1) return odd->value(u, v, p); else return even->value(u, v, p);
+  virtual vec3 value(const vec2& t, const vec3& p) const override {
+    if (((int)std::floor(3.f*p.x) ^ (int)std::floor(3.f*p.y) ^ (int)std::floor(3.f*p.z)) & 1) return odd->value(t, p); else return even->value(t, p);
   }
 
   texture* odd;
@@ -43,7 +45,7 @@ public:
 
   noise_texture(float scale) : scale(scale) {}
 
-  virtual vec3 value(float u, float v, const vec3& p) const override {
+  virtual vec3 value(const vec2& t, const vec3& p) const override {
     //return 0.5f*(perlin::noise(scale * p) + 1.f) * vec3(1, 1, 1);
     //return perlin::turbulence(scale * p) * vec3(1,1,1);
     return 0.5f*(1 + std::sin(scale*p.z + 10.f*perlin::turbulence(p)));
@@ -59,8 +61,10 @@ public:
 
   image_texture(uint8_t* pixels_rgb, unsigned w, unsigned h) : pixels_rgb(pixels_rgb), w(w), h(h) {}
 
-  virtual vec3 value(float u, float v, const vec3& p) const override
+  virtual vec3 value(const vec2& t, const vec3& p) const override
   {
+    auto u = t.u;
+    auto v = t.v;
     u = u < 0.f ? 0.f : u;
     v = v < 0.f ? 0.f : v;
     auto i = unsigned(u*w);
@@ -76,26 +80,4 @@ public:
   uint8_t * pixels_rgb;
   unsigned w;
   unsigned h;
-};
-
-class image_texture_spheremap : public image_texture
-{
-public:
-  image_texture_spheremap(uint8_t* pixels_rgb, unsigned w, unsigned h) : image_texture(pixels_rgb, w, h) {}
-
-  virtual vec3 value(float u, float v, const vec3& p) const override
-  {
-    constexpr float pi = float(3.14159265358979323846264338327950288);
-    constexpr float pi_over_two = float(3.14159265358979323846264338327950288/2.0);
-    constexpr float one_over_pi = float(1.0 / (3.14159265358979323846264338327950288));
-    constexpr float one_over_two_pi = float(1.0 / (2 * 3.14159265358979323846264338327950288));
-
-    float phi = atan2(p.z, p.x);
-    float theta = asin(p.y);
-    return image_texture::value(1.f - one_over_two_pi * (phi + pi),
-                                1.f - one_over_pi*(theta + pi_over_two),
-                                p);
-  }
-
-
 };

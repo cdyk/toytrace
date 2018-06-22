@@ -37,6 +37,12 @@
     <ClCompile Include="..\src\noise.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\rectangle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vec.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -89,6 +95,12 @@
     </ClInclude>
     <ClInclude Include="..\libraries\stb_image.h">
       <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rectangle.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vec2.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

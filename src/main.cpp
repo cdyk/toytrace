@@ -12,6 +12,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
+#include "rectangle.h"
 #include "camera.h"
 #include "material.h"
 #include "bvh.h"
@@ -151,7 +152,7 @@ namespace {
 
     unsigned char* tex_data = stbi_load("earth.jpg", &w, &h, &nn, 3);
     assert(tex_data);
-    texture * map = new image_texture_spheremap(tex_data, w, h);
+    texture * map = new image_texture(tex_data, w, h);
     texture * noise = new noise_texture(5.f);
 
     auto * world = new intersectable_container();
@@ -164,6 +165,24 @@ namespace {
 
     return set_up;
   }
+
+  setup* simple_light(float aspect)
+  {
+    texture * noise = new noise_texture(5.f);
+
+    auto * world = new intersectable_container();
+    world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(noise)));
+    world->items.push_back(new sphere(vec3(0, 2, 0), 2, new lambertian(noise)));
+
+    world->items.push_back(new xy_rect(vec2(3, 1), vec2(5, 3), -2, new lambertian(noise)));
+
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(13, 4, 3), vec3(0, 2, 0), vec3(0, 1, 0), 30.f, aspect, 0.0f, 0, 1);
+    set_up->world = new bvh(world->items, 0, 1);
+
+    return set_up;
+  }
+
 
 
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
@@ -205,7 +224,8 @@ int main(int argc, char** argv)
   //auto * setup = create_world_random(float(w) / float(h));
   //auto * setup = two_spheres(float(w) / float(h));
   //auto * setup = two_perlin_spheres(float(w) / float(h));
-  auto * setup = two_spheres_earth(float(w) / float(h));
+  //auto * setup = two_spheres_earth(float(w) / float(h));
+  auto * setup = simple_light(float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());

@@ -1,6 +1,4 @@
 #pragma once
-#include <limits>
-#include <cmath>
 
 struct vec3
 {
@@ -43,27 +41,14 @@ inline vec3 operator*(const float a, const vec3& b) { return vec3(a*b.x, a*b.y, 
 
 inline float dot(const vec3& a, const vec3& b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
 
-inline float length(const vec3& v)
-{
-  return std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
-}
+float length(const vec3& v);
 
-inline float distance(const vec3& a, const vec3& b)
-{
-  return length(a - b);
-}
+inline float distance(const vec3& a, const vec3& b) { return length(a - b); }
 
-inline vec3 reflect(const vec3& v, const vec3& n)
-{
-  // v points towards surface, results points away.
-  return v - 2 * dot(v, n)*n;
-}
+// v points towards surface, results points away.
+inline vec3 reflect(const vec3& v, const vec3& n) { return v - 2 * dot(v, n)*n; }
 
-inline vec3 normalize(const vec3& x) {
-  auto l = dot(x, x);
-  auto s = l < std::numeric_limits<float>::epsilon() ? 0.f : 1.f / std::sqrt(l);
-  return s * x;
-}
+vec3 normalize(const vec3& x);
 
 inline vec3 cross(const vec3& a, const vec3& b)
 {
@@ -72,7 +57,4 @@ inline vec3 cross(const vec3& a, const vec3& b)
               a.x * b.y - a.y * b.x);
 }
 
-inline vec3 mix(const vec3& a, const vec3& b, const float t)
-{
-  return (1.f - t) * a + t * b;
-}
+inline vec3 mix(const vec3& a, const vec3& b, const float t) { return (1.f - t) * a + t * b; }

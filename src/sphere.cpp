@@ -2,6 +2,16 @@
 #include <cstdio>
 #include <cassert>
 
+namespace {
+
+  constexpr float pi = float(3.14159265358979323846264338327950288);
+  constexpr float pi_over_two = float(3.14159265358979323846264338327950288 / 2.0);
+  constexpr float one_over_pi = float(1.0 / (3.14159265358979323846264338327950288));
+  constexpr float one_over_two_pi = float(1.0 / (2 * 3.14159265358979323846264338327950288));
+
+
+}
+
 bool sphere::intersect(const ray& r, float t_min, float t_max, intersection& rec) const
 {
   // a = o-p
@@ -20,6 +30,12 @@ bool sphere::intersect(const ray& r, float t_min, float t_max, intersection& rec
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - center);
       rec.mat = mat;
+
+      float phi = atan2(rec.n.z, rec.n.x);
+      float theta = asin(rec.n.y);
+      rec.u.x = 1.f - one_over_two_pi * (phi + pi);
+      rec.u.y = 1.f - one_over_pi * (theta + pi_over_two);
+
       return true;
     }
     t = (-b + std::sqrt(disc)) / a;
@@ -28,6 +44,12 @@ bool sphere::intersect(const ray& r, float t_min, float t_max, intersection& rec
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - center);
       rec.mat = mat;
+
+      float phi = atan2(rec.n.z, rec.n.x);
+      float theta = asin(rec.n.y);
+      rec.u.x = 1.f - one_over_two_pi * (phi + pi);
+      rec.u.y = 1.f - one_over_pi * (theta + pi_over_two);
+
       return true;
     }
   }
@@ -58,10 +80,17 @@ bool moving_sphere::intersect(const ray& r, float t_min, float t_max, intersecti
   if (0.f < disc) {
     auto t = (-b - std::sqrt(disc)) / a;
     if (t_min < t && t < t_max) {
+
       rec.t = t;
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - ctr);
       rec.mat = mat;
+
+      float phi = atan2(rec.n.z, rec.n.x);
+      float theta = asin(rec.n.y);
+      rec.u.x = 1.f - one_over_two_pi * (phi + pi);
+      rec.u.y = 1.f - one_over_pi * (theta + pi_over_two);
+
       return true;
     }
     t = (-b + std::sqrt(disc)) / a;
@@ -70,6 +99,12 @@ bool moving_sphere::intersect(const ray& r, float t_min, float t_max, intersecti
       rec.p = r.at(t);
       rec.n = (1.f / radius)*(rec.p - ctr);
       rec.mat = mat;
+
+      float phi = atan2(rec.n.z, rec.n.x);
+      float theta = asin(rec.n.y);
+      rec.u.x = 1.f - one_over_two_pi * (phi + pi);
+      rec.u.y = 1.f - one_over_pi * (theta + pi_over_two);
+
       return true;
     }
   }

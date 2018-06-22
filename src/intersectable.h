@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ray.h"
+#include "vec2.h"
 #include "aabb.h"
 #include <vector>
 
@@ -9,6 +10,7 @@ class material;
 struct intersection
 {
   float t;
+  vec2 u;
   vec3 p;
   vec3 n;
   material* mat;
