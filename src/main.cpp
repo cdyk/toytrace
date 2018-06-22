@@ -40,17 +40,19 @@ namespace {
       ray scattered;
       vec3 attenuation;
 
+      auto emitted = hit.mat->emitted(hit.t, hit.p);
       if (depth && hit.mat->scatter(scattered, attenuation, r, hit)) {
-        return attenuation * color(scattered, world, depth - 1);
+        return emitted + attenuation * color(scattered, world, depth - 1);
       }
       else {
-        return vec3(0, 0, 0);
+        return emitted;
       }
     }
 
     vec3 v = normalize(r.dir);
     auto t = 0.5f*(v.y + 1.f);
-    return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
+    //return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
+    return vec3(0, 0, 0);
   }
 
   struct setup
@@ -168,13 +170,15 @@ namespace {
 
   setup* simple_light(float aspect)
   {
-    texture * noise = new noise_texture(5.f);
+    texture* noise = new noise_texture(5.f);
+
+    texture* light = new constant_texture(vec3(4));
 
     auto * world = new intersectable_container();
     world->items.push_back(new sphere(vec3(0, -1000, 0), 1000, new lambertian(noise)));
     world->items.push_back(new sphere(vec3(0, 2, 0), 2, new lambertian(noise)));
-
-    world->items.push_back(new xy_rect(vec2(3, 1), vec2(5, 3), -2, new lambertian(noise)));
+    world->items.push_back(new sphere(vec3(0, 7, 0), 2, new diffuse_light(light)));
+    world->items.push_back(new xy_rect(vec2(3, 1), vec2(5, 3), -2, new diffuse_light(light)));
 
     auto * set_up = new setup;
     set_up->camera = new camera(vec3(13, 4, 3), vec3(0, 2, 0), vec3(0, 1, 0), 30.f, aspect, 0.0f, 0, 1);

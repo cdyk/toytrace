@@ -12,11 +12,15 @@ public:
                        vec3& attenuation,
                        const ray& r_in,
                        const intersection& hit) const = 0;
+
+  virtual vec3 emitted(const vec2& t, const vec3& p) const { return vec3(0); }
 };
 
 class lambertian : public material
 {
 public:
+  lambertian() = delete;
+
   lambertian(texture* albedo) : albedo(albedo) {}
 
   virtual bool scatter(ray& scattered,
@@ -53,4 +57,21 @@ public:
                        const intersection& hit) const override;
 
   float ref_idx;
+};
+
+class diffuse_light : public material
+{
+public:
+  diffuse_light() = delete;
+
+  diffuse_light(texture* emit) : emit(emit) {}
+
+  virtual bool scatter(ray& scattered,
+                       vec3& attenuation,
+                       const ray& r_in,
+                       const intersection& hit) const override { return false; }
+
+  virtual vec3 emitted(const vec2& t, const vec3& p) const { return emit->value(t, p); }
+
+  texture* emit;
 };
