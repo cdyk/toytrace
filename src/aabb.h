@@ -18,6 +18,14 @@ struct aabb
     }
   }
 
+  void include(const vec3& p)
+  {
+    for (unsigned a = 0; a < 3; a++) {
+      min[a] = min[a] < p[a] ? min[a] : p[a];
+      max[a] = p[a] < max[a] ? max[a] : p[a];
+    }
+  }
+
   bool intersects(const ray& r, float t_min, float t_max) const
   {
     for (unsigned a = 0; a < 3; a++) {

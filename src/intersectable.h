@@ -56,3 +56,33 @@ public:
 
   intersectable * obj;
 };
+
+class translate : public intersectable
+{
+public:
+  translate() = delete;
+
+  translate(intersectable* obj, const vec3& shift) : obj(obj), shift(shift) {}
+
+  virtual bool intersect(const ray& r, float t_min, float t_max, intersection& isec) const override;
+
+  virtual aabb bounding_box(float time0, float time1) const override;
+
+  intersectable * obj;
+  vec3 shift;
+};
+
+class rotate_y : public intersectable
+{
+public:
+  rotate_y(intersectable* obj, float theta);
+
+  virtual bool intersect(const ray& r, float t_min, float t_max, intersection& isec) const override;
+
+  virtual aabb bounding_box(float time0, float time1) const override;
+
+  intersectable * obj;
+  float theta_cos;
+  float theta_sin;
+
+};

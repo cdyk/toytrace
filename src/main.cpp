@@ -203,8 +203,8 @@ namespace {
     world->items.push_back(new normal_flip(new xz_rect(vec2(0, 0), vec2(555, 555), 555, white)));
     world->items.push_back(new normal_flip(new xy_rect(vec2(0, 0), vec2(555, 555), 555, white)));
 
-    world->items.push_back(new box(vec3(130, 0, 65), vec3(295, 165, 230), white));
-    world->items.push_back(new box(vec3(265, 0, 295), vec3(430, 330, 460), white));
+    world->items.push_back(new translate(new rotate_y(new box(vec3(0), vec3(165, 165, 165), white), -18), vec3(130, 0, 65)));
+    world->items.push_back(new translate(new rotate_y(new box(vec3(0), vec3(165, 330, 165), white), 15), vec3(265, 0, 295)));
 
     auto * set_up = new setup;
     set_up->camera = new camera(vec3(278, 278, -800), vec3(278, 278, 0), vec3(0, 1, 0), 40.f, aspect, 0.0f, 0, 1);
