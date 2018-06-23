@@ -75,3 +75,18 @@ public:
 
   texture* emit;
 };
+
+class isotropic : public material
+{
+public:
+  isotropic() = delete;
+
+  isotropic(texture* albedo) : albedo(albedo) {}
+
+  virtual bool scatter(ray& scattered,
+                       vec3& attenuation,
+                       const ray& r_in,
+                       const intersection& hit) const override;
+
+  texture* albedo;
+};

@@ -6,6 +6,7 @@
 #include <vector>
 
 class material;
+class texture;
 
 struct intersection
 {
@@ -84,5 +85,20 @@ public:
   intersectable * obj;
   float theta_cos;
   float theta_sin;
+};
 
+class constant_medium : public intersectable
+{
+public:
+  constant_medium() = delete;
+
+  constant_medium(intersectable* boundary, float density, texture* phase_func);
+
+  virtual bool intersect(const ray& r, float t_min, float t_max, intersection& isec) const override;
+
+  virtual aabb bounding_box(float time0, float time1) const override { return boundary->bounding_box(time0, time1); }
+
+  intersectable* boundary;
+  float density;
+  material* phase_func;
 };

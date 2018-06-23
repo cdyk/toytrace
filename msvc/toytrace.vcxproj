@@ -120,6 +120,7 @@
     <ClCompile Include="..\src\box.cpp" />
     <ClCompile Include="..\src\bvh.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\funcs.cpp" />
     <ClCompile Include="..\src\intersectable.cpp" />
     <ClCompile Include="..\src\lib_impl.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -151,6 +152,9 @@
     <ClInclude Include="..\src\vec2.h" />
     <ClInclude Include="..\src\vec3.h" />
     <ClInclude Include="..\src\vec4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

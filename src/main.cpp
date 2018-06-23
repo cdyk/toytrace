@@ -20,20 +20,6 @@
 
 namespace {
 
-  float frand()
-  {
-    return (1.f / (1.f + RAND_MAX))*float(rand());
-  }
-
-  vec3 random_in_unit_sphere()
-  {
-    vec3 p;
-    do {
-      p = 2.f*vec3(frand(), frand(), frand()) - vec3(1, 1, 1);
-    } while (dot(p, p) >= 1.f);
-    return p;
-  }
-
   vec3 color(const ray& r, const intersectable* world, unsigned depth)
   {
     intersection hit;
@@ -214,6 +200,36 @@ namespace {
     return set_up;
   }
 
+  setup* cornell_smoke(float aspect)
+  {
+    auto * red = new lambertian(new constant_texture(vec3(0.65f, 0.05f, 0.05f)));
+    auto * white = new lambertian(new constant_texture(vec3(0.73f, 0.73f, 0.73f)));
+    auto * green = new lambertian(new constant_texture(vec3(0.12f, 0.45f, 0.15f)));
+    auto * light = new diffuse_light(new constant_texture(vec3(15)));
+
+    auto * world = new intersectable_container();
+    world->items.push_back(new normal_flip(new yz_rect(vec2(0, 0), vec2(555, 555), 555, green)));
+    world->items.push_back(new yz_rect(vec2(0, 0), vec2(555, 555), 0, red));
+    world->items.push_back(new xz_rect(vec2(213, 227), vec2(343, 332), 554, light));
+    world->items.push_back(new xz_rect(vec2(0, 0), vec2(555, 555), 0, white));
+    world->items.push_back(new normal_flip(new xz_rect(vec2(0, 0), vec2(555, 555), 555, white)));
+    world->items.push_back(new normal_flip(new xy_rect(vec2(0, 0), vec2(555, 555), 555, white)));
+
+    auto * b0 = new translate(new rotate_y(new box(vec3(0), vec3(165, 165, 165), white), -18), vec3(130, 0, 65));
+    auto * b1 = new translate(new rotate_y(new box(vec3(0), vec3(165, 330, 165), white), 15), vec3(265, 0, 295));
+
+    world->items.push_back(new constant_medium(b0, 0.01f, new constant_texture(1)));
+    world->items.push_back(new constant_medium(b1, 0.01f, new constant_texture(0)));
+
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(278, 278, -800), vec3(278, 278, 0), vec3(0, 1, 0), 40.f, aspect, 0.0f, 0, 1);
+    set_up->camera->orientation = axisAngle(vec3(0, 1, 0), float(3.14159265358979323846264338327950288)); // exactly 180 deg rotation not handled yet.
+    set_up->world = new bvh(world->items, 0, 1);
+
+    return set_up;
+  }
+
+
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
     for (unsigned i = 0; i < w; i++) {
@@ -255,7 +271,8 @@ int main(int argc, char** argv)
   //auto * setup = two_perlin_spheres(float(w) / float(h));
   //auto * setup = two_spheres_earth(float(w) / float(h));
   //auto * setup = simple_light(float(w) / float(h));
-  auto * setup = cornell_box(float(w) / float(h));
+  //auto * setup = cornell_box(float(w) / float(h));
+  auto * setup = cornell_smoke(float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());

@@ -2,6 +2,7 @@
 
 #include "intersectable.h"
 #include "funcs.h"
+#include "material.h"
 
 bool intersectable_container::intersect(const ray& r, float t_min, float t_max, intersection& hit) const
 {
@@ -97,4 +98,44 @@ aabb rotate_y::bounding_box(float time0, float time1) const
     }
   }
   return newbox;
+}
+
+constant_medium::constant_medium(intersectable* boundary, float density, texture* phase_func) :
+  boundary(boundary),
+  density(density),
+  phase_func(new isotropic(phase_func))
+{ }
+
+
+bool constant_medium::intersect(const ray& r, float t_min, float t_max, intersection& isec) const
+{
+
+  intersection enter_hit;
+  if (boundary->intersect(r, -FLT_MAX, FLT_MAX, enter_hit)) {  // find any hit
+
+    intersection exit_hit;
+    if (boundary->intersect(r, enter_hit.t + 0.0001f, FLT_MAX, exit_hit)) {  // we're inside
+
+      enter_hit.t = mmax(enter_hit.t, t_min);
+      exit_hit.t = mmin(exit_hit.t, t_max);
+
+      if (exit_hit.t < enter_hit.t) return false;
+
+      auto distance_inside_boundary = (exit_hit.t - enter_hit.t)*length(r.dir);
+
+      auto probabilistic_hit_distance = -(1.f / density)*log(frand());
+
+      if (probabilistic_hit_distance < distance_inside_boundary) {
+
+        isec.t = enter_hit.t + probabilistic_hit_distance / length(r.dir);
+        isec.u = vec2(0);
+        isec.p = r.at(isec.t);
+        isec.n = vec3(1, 0, 0);
+        isec.mat = phase_func;
+
+        return true;
+      }
+    }
+  }
+  return false;
 }

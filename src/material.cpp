@@ -1,44 +1,6 @@
+#include "funcs.h"
 #include "material.h"
 #include "intersectable.h"
-
-namespace {
-
-  float frand()
-  {
-    return (1.f / (1.f + RAND_MAX))*float(rand());
-  }
-
-  vec3 random_in_unit_sphere()
-  {
-    vec3 p;
-    do {
-      p = 2.f*vec3(frand(), frand(), frand()) - vec3(1, 1, 1);
-    } while (dot(p, p) >= 1.f);
-    return p;
-  }
-
-  bool refract(vec3& refracted, const vec3& v, const vec3& n, float ni_over_nt)
-  {
-    vec3 w = normalize(v);
-    float dt = dot(w, n);
-    float discriminant = 1.f - ni_over_nt * ni_over_nt * (1.f - dt * dt);
-    if (0.f < discriminant) {
-      refracted = ni_over_nt * (w - dt * n) - std::sqrt(discriminant) * n;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
-  float schlick(float cosine, float ref_idx)
-  {
-    float r0 = (1 - ref_idx) / (1 + ref_idx);
-    r0 = r0 * r0;
-    return r0 + (1 - r0)*std::pow(1 - cosine, 5);
-  }
-
-}
 
 bool lambertian::scatter(ray& scattered,
                          vec3& attenuation,
@@ -104,3 +66,13 @@ bool dielectric::scatter(ray& scattered,
   return true;
 }
 
+
+bool isotropic::scatter(ray& scattered,
+                         vec3& attenuation,
+                         const ray& r_in,
+                         const intersection& hit) const
+{
+  scattered = ray(hit.p, random_in_unit_sphere(), r_in.time);
+  attenuation = albedo->value(hit.u, hit.p);
+  return true;
+}

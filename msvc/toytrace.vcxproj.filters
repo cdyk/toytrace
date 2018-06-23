@@ -46,6 +46,9 @@
     <ClCompile Include="..\src\box.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\funcs.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libraries\stb_image_write.h">
@@ -108,5 +111,8 @@
     <ClInclude Include="..\src\box.h">
       <Filter>Source</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

@@ -3,25 +3,6 @@
 #include "funcs.h"
 #include "camera.h"
 
-namespace {
-
-  float frand()
-  {
-    return (1.f / (1.f + RAND_MAX))*float(rand());
-  }
-
-  vec3 random_in_unit_disc()
-  {
-    vec3 p;
-    do {
-      p = 2.f*vec3(frand(), frand(), 0) - vec3(1, 1, 0);
-    } while (dot(p, p) >= 1.f);
-    return p;
-  }
-
-
-}
-
 void camera::setLens(float vfov, float aspect, float aperture)
 {
   lens_radius = 0.5f * aperture;
