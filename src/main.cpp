@@ -229,6 +229,87 @@ namespace {
     return set_up;
   }
 
+  setup* final(float aspect)
+  {
+    auto * world = new intersectable_container();
+
+    {
+      auto * boxes = new intersectable_container();
+      auto * ground = new lambertian(new constant_texture(vec3(0.48f, 0.83f, 0.53f)));
+      float w = 100;
+      unsigned nb = 20;
+      for (unsigned j = 0; j < 20; j++) {
+        for (unsigned i = 0; i < 20; i++) {
+          vec3 p0(-1000 + w * i,
+                  0.f,
+                  -1000 + w * j);
+            vec3 p1 = p0 + vec3(w,
+                              100 * (frand() + 0.01f),
+                              w);
+          boxes->items.push_back(new box(p0, p1, ground));
+        }
+      }
+      world->items.push_back(new bvh(boxes->items, 0.f, 1.f));
+    }
+
+    {
+      auto * bubbles = new intersectable_container();
+      auto * white = new lambertian(new constant_texture(vec3(0.73f)));
+      unsigned ns = 1000;
+      for (unsigned j = 0; j < ns; j++) {
+        bubbles->items.push_back(new sphere(165.f*vec3(frand(), frand(), frand()), 10.f, white));
+      }
+      world->items.push_back(new translate(new rotate_y(new bvh(bubbles->items, 0, 1), 15), vec3(-100, 270, 395)));
+    }
+
+    {
+      vec3 center(400, 400, 200);
+      world->items.push_back(new moving_sphere(center, center + vec3(30, 0, 0), 0, 1, 50, new lambertian(new constant_texture(vec3(0.7f, 0.3f, 0.1f)))));
+    }
+
+    world->items.push_back(new sphere(vec3(260, 150, 15), 50, new dielectric(1.5f)));
+
+    world->items.push_back(new sphere(vec3(0, 150, 145), 50, new metal(vec3(0.8f, 0.8f, 0.9f), 10.f)));
+
+    {
+      auto * boundary = new sphere(vec3(360, 150, 145), 70, new dielectric(1.5));
+      world->items.push_back(new constant_medium(boundary, 0.2f, new constant_texture(vec3(0.2f, 0.4f, 0.9f))));
+      world->items.push_back(boundary);
+    }
+
+   {
+      int w, h, nn;
+      unsigned char* tex_data = stbi_load("earth.jpg", &w, &h, &nn, 3);
+      assert(tex_data);
+      texture * map = new image_texture(tex_data, w, h);
+      world->items.push_back(new sphere(vec3(400, 200, 400), 100, new lambertian(map)));
+    }
+
+    {
+      texture * noise = new noise_texture(0.05f);
+      world->items.push_back(new sphere(vec3(220, 280, 300), 80, new lambertian(noise)));
+    }
+
+    {
+      auto * boundary = new sphere(vec3(0), 1000, nullptr);
+      world->items.push_back(new constant_medium(boundary, 0.0001f, new constant_texture(vec3(1.f))));
+    }
+
+    {
+      auto * light_mat = new diffuse_light(new constant_texture(7));
+      auto * light = new xz_rect(vec2(123, 147), vec2(423, 412), 554, light_mat);
+      world->items.push_back(light);
+    }
+
+    auto * set_up = new setup;
+    set_up->camera = new camera(vec3(500, 278, -800), vec3(278, 278, 0), vec3(0, 1, 0), 35.f, aspect, 0.0f, 0, 1);
+    //set_up->camera->orientation = axisAngle(vec3(0, 1, 0), float(3.14159265358979323846264338327950288)); // exactly 180 deg rotation not handled yet.
+    set_up->world = new bvh(world->items, 0, 1);
+
+    return set_up;
+
+  }
+
 
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
@@ -258,8 +339,8 @@ namespace {
 int main(int argc, char** argv)
 {
   const char* filename = "output.png";
-  const unsigned w = 600;
-  const unsigned h = 300;
+  const unsigned w = 400;
+  const unsigned h = 400;
   const unsigned s = 100;
 
   uint8_t image[3 * w * h];
@@ -272,7 +353,8 @@ int main(int argc, char** argv)
   //auto * setup = two_spheres_earth(float(w) / float(h));
   //auto * setup = simple_light(float(w) / float(h));
   //auto * setup = cornell_box(float(w) / float(h));
-  auto * setup = cornell_smoke(float(w) / float(h));
+  //auto * setup = cornell_smoke(float(w) / float(h));
+  auto * setup = final(float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());

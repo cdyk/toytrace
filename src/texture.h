@@ -48,7 +48,7 @@ public:
   virtual vec3 value(const vec2& t, const vec3& p) const override {
     //return 0.5f*(perlin::noise(scale * p) + 1.f) * vec3(1, 1, 1);
     //return perlin::turbulence(scale * p) * vec3(1,1,1);
-    return 0.5f*(1 + std::sin(scale*p.z + 10.f*perlin::turbulence(p)));
+    return 0.5f*(1 + std::sin(scale*p.z + 10.f*perlin::turbulence(0.5f*scale*p)));
   }
 
   float scale;
