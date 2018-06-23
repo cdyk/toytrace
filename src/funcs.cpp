@@ -1,11 +1,23 @@
 #include <cmath>
+#include <atomic>
+#include <cassert>
 
 #include "funcs.h"
 #include "vec3.h"
 
-inline float frand()
+float frand()
 {
-  return (1.f / (1.f + RAND_MAX))*float(rand());
+  static std::atomic<unsigned> counter = 0;
+  thread_local uint64_t state;
+  thread_local bool initialized = false;
+  if (!initialized) {
+    state = counter.fetch_add(1);
+    initialized = true;
+  }
+  state = (25214903917ull*state + 11ull) & ((1ull << 48) - 1ull);
+  auto f = float((1.0 / (1ull << 48))*double(state));
+  assert(f <= 1.f);
+  return f;
 }
 
 vec3 random_in_unit_disc()
