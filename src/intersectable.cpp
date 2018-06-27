@@ -100,12 +100,12 @@ aabb rotate_y::bounding_box(float time0, float time1) const
   return newbox;
 }
 
+#if 0
 constant_medium::constant_medium(intersectable* boundary, float density, texture* phase_func) :
   boundary(boundary),
   density(density),
   phase_func(new isotropic(phase_func))
 { }
-
 
 bool constant_medium::intersect(const ray& r, float t_min, float t_max, intersection& isec) const
 {
@@ -139,3 +139,4 @@ bool constant_medium::intersect(const ray& r, float t_min, float t_max, intersec
   }
   return false;
 }
+#endif

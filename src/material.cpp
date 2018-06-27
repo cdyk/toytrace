@@ -2,18 +2,27 @@
 #include "material.h"
 #include "intersectable.h"
 
-bool lambertian::scatter(ray& scattered,
+bool lambertian::scatter(ray& r_scattered,
+                         float& one_over_pdf,
                          vec3& attenuation,
                          const ray& r_in,
                          const intersection& hit) const
 {
   vec3 target = hit.p + hit.n + random_in_unit_sphere();
-  scattered = ray(hit.p, target - hit.p, r_in.time);
+  r_scattered = ray(hit.p, normalize(target - hit.p), r_in.time);
+  one_over_pdf = denan(pi / dot(hit.n, r_scattered.dir));
   attenuation = albedo->value(hit.u, hit.p);
   return true;
 }
 
+float lambertian::scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const
+{
+  auto cosine = dot(hit.n, normalize(r_scattered.dir)); // fixme: make dir always normalized
+  return one_over_pi * mmax(0.f, cosine);
+}
 
+
+#if 0
 bool metal::scatter(ray& scattered,
                     vec3& attenuation,
                     const ray& r_in,
@@ -76,3 +85,4 @@ bool isotropic::scatter(ray& scattered,
   attenuation = albedo->value(hit.u, hit.p);
   return true;
 }
+#endif

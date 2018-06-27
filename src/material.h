@@ -8,10 +8,14 @@ class material
 {
 public:
 
-  virtual bool scatter(ray& scattered,
-                       vec3& attenuation,
+  virtual bool scatter(ray& r_scattered,
+                       float& one_over_pdf,            // Probability of sampling function.
+                       vec3& albedo,
                        const ray& r_in,
                        const intersection& hit) const = 0;
+
+  // Probability of scattering in r_scattered direction.
+  virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const = 0;
 
   virtual vec3 emitted(const vec2& t, const vec3& p) const { return vec3(0); }
 };
@@ -23,14 +27,18 @@ public:
 
   lambertian(texture* albedo) : albedo(albedo) {}
 
-  virtual bool scatter(ray& scattered,
+  virtual bool scatter(ray& r_scattered,
+                       float& one_over_pdf,
                        vec3& attenuation,
                        const ray& r_in,
                        const intersection& hit) const override;
 
+  virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const override;
+
   texture* albedo;
 };
 
+#if 0
 class metal : public material
 {
 public:
@@ -59,6 +67,8 @@ public:
   float ref_idx;
 };
 
+#endif
+
 class diffuse_light : public material
 {
 public:
@@ -67,15 +77,18 @@ public:
   diffuse_light(texture* emit) : emit(emit) {}
 
   virtual bool scatter(ray& scattered,
+                       float& one_over_pdf,
                        vec3& attenuation,
                        const ray& r_in,
                        const intersection& hit) const override { return false; }
+  virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const override { return 0.f; }
 
   virtual vec3 emitted(const vec2& t, const vec3& p) const { return emit->value(t, p); }
 
   texture* emit;
 };
 
+#if 0
 class isotropic : public material
 {
 public:
@@ -90,3 +103,4 @@ public:
 
   texture* albedo;
 };
+#endif

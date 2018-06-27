@@ -87,6 +87,7 @@ public:
   float theta_sin;
 };
 
+#if 0
 class constant_medium : public intersectable
 {
 public:
@@ -102,3 +103,4 @@ public:
   float density;
   material* phase_func;
 };
+#endif

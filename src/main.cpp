@@ -20,23 +20,26 @@
 
 namespace {
 
-  vec3 color(const ray& r, const intersectable* world, unsigned depth)
+  vec3 color(const ray& r_in, const intersectable* world, unsigned depth)
   {
     intersection hit;
-    if (world->intersect(r, 0.001f, std::numeric_limits<float>::max(), hit)) {
-      ray scattered;
-      vec3 attenuation;
+    if (world->intersect(r_in, 0.001f, std::numeric_limits<float>::max(), hit)) {
+      ray r_scattered;
+      vec3 albedo;
+      float one_over_pdf;
 
       auto emitted = hit.mat->emitted(hit.t, hit.p);
-      if (depth && hit.mat->scatter(scattered, attenuation, r, hit)) {
-        return emitted + attenuation * color(scattered, world, depth - 1);
+      if (depth && hit.mat->scatter(r_scattered, one_over_pdf, albedo, r_in, hit)) {
+        auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
+        auto col = color(r_scattered, world, depth - 1);
+        return emitted + albedo * spdf * one_over_pdf * col;
       }
       else {
         return emitted;
       }
     }
 
-    vec3 v = normalize(r.dir);
+    vec3 v = normalize(r_in.dir);
     auto t = 0.5f*(v.y + 1.f);
     //return mix(vec3(1.f, 1.f, 1.f), vec3(0.5f, 0.7f, 1.f), t);
     return vec3(0, 0, 0);
@@ -48,6 +51,7 @@ namespace {
     intersectable* world;
   };
 
+#if 0
   setup* create_world_random(float aspect)
   {
     auto * world =  new intersectable_container();
@@ -173,6 +177,7 @@ namespace {
 
     return set_up;
   }
+#endif
 
   setup* cornell_box(float aspect)
   {
@@ -200,6 +205,7 @@ namespace {
     return set_up;
   }
 
+#if 0
   setup* cornell_smoke(float aspect)
   {
     auto * red = new lambertian(new constant_texture(vec3(0.65f, 0.05f, 0.05f)));
@@ -309,7 +315,7 @@ namespace {
     return set_up;
 
   }
-
+#endif
 
   void renderLine(uint8_t* image, unsigned w, unsigned h, unsigned s, const setup* set_up , unsigned j)
   {
@@ -339,9 +345,9 @@ namespace {
 int main(int argc, char** argv)
 {
   const char* filename = "output.png";
-  const unsigned w = 400;
-  const unsigned h = 400;
-  const unsigned s = 100;
+  const unsigned w = 200;
+  const unsigned h = 200;
+  const unsigned s = 1000;
 
   uint8_t image[3 * w * h];
 
@@ -352,9 +358,9 @@ int main(int argc, char** argv)
   //auto * setup = two_perlin_spheres(float(w) / float(h));
   //auto * setup = two_spheres_earth(float(w) / float(h));
   //auto * setup = simple_light(float(w) / float(h));
-  //auto * setup = cornell_box(float(w) / float(h));
+  auto * setup = cornell_box(float(w) / float(h));
   //auto * setup = cornell_smoke(float(w) / float(h));
-  auto * setup = final(float(w) / float(h));
+  //auto * setup = final(float(w) / float(h));
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
   fprintf(stderr, "Setup elapsed time %f\n", (1.0 / 1000.0)*duration.count());
