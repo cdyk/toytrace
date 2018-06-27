@@ -30,6 +30,24 @@ namespace {
 
       auto emitted = hit.mat->emitted(hit.t, hit.p);
       if (depth && hit.mat->scatter(r_scattered, one_over_pdf, albedo, r_in, hit)) {
+
+        vec3 on_light = vec3(213 + (343 - 213)*frand(),
+                             554,
+                             227 + (332 - 227)*frand());
+
+        auto to_light = on_light - hit.p;
+        if (dot(to_light, hit.n) < 0.f) return emitted;
+
+        auto distance_sqr = dot(to_light, to_light);
+        to_light = normalize(to_light);
+        auto light_area = (343 - 213)*(332 - 227);
+        auto light_cosine = fmax(to_light.y, -to_light.y);
+        if (light_cosine < 0.000001f) return emitted;
+
+        one_over_pdf = (light_cosine * light_area) / distance_sqr;
+
+        r_scattered = ray(hit.p, to_light, hit.t);
+
         auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
         auto col = color(r_scattered, world, depth - 1);
         return emitted + albedo * spdf * one_over_pdf * col;
