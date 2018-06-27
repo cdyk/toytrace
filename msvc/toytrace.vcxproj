@@ -126,6 +126,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\noise.cpp" />
+    <ClCompile Include="..\src\pdf.cpp" />
     <ClCompile Include="..\src\quat.cpp" />
     <ClCompile Include="..\src\rectangle.cpp" />
     <ClCompile Include="..\src\sphere.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="..\src\mat3.h" />
     <ClInclude Include="..\src\mat4.h" />
     <ClInclude Include="..\src\material.h" />
+    <ClInclude Include="..\src\pdf.h" />
     <ClInclude Include="..\src\quat.h" />
     <ClInclude Include="..\src\ray.h" />
     <ClInclude Include="..\src\rectangle.h" />

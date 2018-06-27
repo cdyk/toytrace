@@ -17,6 +17,7 @@
 #include "material.h"
 #include "bvh.h"
 #include "box.h"
+#include "pdf.h"
 
 namespace {
 
@@ -30,6 +31,12 @@ namespace {
 
       auto emitted = hit.mat->emitted(hit.t, hit.p);
       if (depth && hit.mat->scatter(r_scattered, one_over_pdf, albedo, r_in, hit)) {
+
+        cosine_pdf pdf(hit.n);
+
+        r_scattered = ray(hit.p, pdf.generate(), hit.t);
+        one_over_pdf = pdf.one_over_value(r_scattered.dir);
+#if 0
 
         vec3 on_light = vec3(213 + (343 - 213)*frand(),
                              554,
@@ -47,7 +54,7 @@ namespace {
         one_over_pdf = (light_cosine * light_area) / distance_sqr;
 
         r_scattered = ray(hit.p, to_light, hit.t);
-
+#endif
         auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
         auto col = color(r_scattered, world, depth - 1);
         return emitted + albedo * spdf * one_over_pdf * col;
