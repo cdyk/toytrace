@@ -38,6 +38,12 @@ vec3 random_in_unit_disc();
 
 vec3 random_in_unit_sphere();
 
+// p(dir) = cos(theta)/Pi.
+vec3 random_cosine_direction();
+
+// create orthonormal basis where w is along d.
+void orthonormal(vec3& u, vec3& v, vec3& w, const vec3& d);
+
 bool refract(vec3& refracted, const vec3& v, const vec3& n, float ni_over_nt);
 
 float schlick(float cosine, float ref_idx);

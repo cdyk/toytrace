@@ -2,18 +2,22 @@
 #include "material.h"
 #include "intersectable.h"
 
+
 bool lambertian::scatter(ray& r_scattered,
                          float& one_over_pdf,
                          vec3& attenuation,
                          const ray& r_in,
                          const intersection& hit) const
 {
-  vec3 on_hemisphere;
-  do {
-    on_hemisphere = random_in_unit_sphere();
-  } while (dot(on_hemisphere, hit.n) < 0.f);
+  vec3 u, v, w;
+  orthonormal(u, v, w, hit.n);
+
+  auto dir_l = random_cosine_direction();
+
+  vec3 on_hemisphere = dir_l.x*u + dir_l.y*v + dir_l.z*w;
+
   r_scattered = ray(hit.p, normalize(on_hemisphere), r_in.time);
-  one_over_pdf = two_pi;
+  one_over_pdf = denan(pi / (dot(w, r_scattered.dir)));
   attenuation = albedo->value(hit.u, hit.p);
   return true;
 }
