@@ -8,9 +8,12 @@ bool lambertian::scatter(ray& r_scattered,
                          const ray& r_in,
                          const intersection& hit) const
 {
-  vec3 target = hit.p + hit.n + random_in_unit_sphere();
-  r_scattered = ray(hit.p, normalize(target - hit.p), r_in.time);
-  one_over_pdf = denan(pi / dot(hit.n, r_scattered.dir));
+  vec3 on_hemisphere;
+  do {
+    on_hemisphere = random_in_unit_sphere();
+  } while (dot(on_hemisphere, hit.n) < 0.f);
+  r_scattered = ray(hit.p, normalize(on_hemisphere), r_in.time);
+  one_over_pdf = two_pi;
   attenuation = albedo->value(hit.u, hit.p);
   return true;
 }

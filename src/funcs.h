@@ -3,6 +3,7 @@
 struct vec3;
 
 constexpr float pi            = float(3.14159265358979323846264338327950288);
+constexpr float two_pi        = float(2.0 * 3.14159265358979323846264338327950288);
 constexpr float one_over_pi   = float(1.0 / 3.14159265358979323846264338327950288);
 
 inline float saturate(const float x)
