@@ -35,3 +35,24 @@ vec3 hitable_pdf::generate() const
 {
   return object->random(origin);
 }
+
+mixture_pdf::mixture_pdf(pdf* a, pdf* b) :
+  a(a),
+  b(b)
+{}
+
+float mixture_pdf::value(const vec3& direction) const
+{
+  return 0.5f*a->value(direction) + 0.5f*b->value(direction);
+}
+
+vec3 mixture_pdf::generate() const
+{
+  if (frand() < 0.5f) {
+    return a->generate();
+  }
+  else {
+    return b->generate();
+  }
+
+}

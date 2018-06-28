@@ -44,5 +44,17 @@ public:
 
   intersectable* object;
   vec3 origin;
+};
 
+class mixture_pdf : public pdf
+{
+public:
+  mixture_pdf(pdf* a, pdf* b);
+
+  virtual float value(const vec3& direction) const override;
+
+  virtual vec3 generate() const override;
+
+  pdf* a;
+  pdf* b;
 };

@@ -34,17 +34,13 @@ namespace {
 
 
         intersectable * light_shape = new xz_rect(vec2(213, 227), vec2(343, 332), 554, nullptr);
-        hitable_pdf pdf(light_shape, hit.p);
+        hitable_pdf pdf0(light_shape, hit.p);
+        cosine_pdf pdf1(hit.n);
+        mixture_pdf pdf(&pdf0, &pdf1);
 
         r_scattered = ray(hit.p, pdf.generate(), hit.t);
         one_over_pdf = pdf.one_over_value(r_scattered.dir);
 
-#if 0
-        cosine_pdf pdf(hit.n);
-
-        r_scattered = ray(hit.p, pdf.generate(), hit.t);
-        one_over_pdf = pdf.one_over_value(r_scattered.dir);
-#endif
 #if 0
         vec3 on_light = vec3(213 + (343 - 213)*frand(),
                              554,
@@ -380,7 +376,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 200;
-  const unsigned s = 10;
+  const unsigned s = 1000;
 
   uint8_t image[3 * w * h];
 
