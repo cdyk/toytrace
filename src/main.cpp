@@ -28,7 +28,7 @@ namespace {
 
       ScatterData scatterData;
 
-      auto emitted = hit.mat->emitted(hit.t, hit.p);
+      auto emitted = hit.mat->emitted(r_in, hit, hit.t, hit.p);
       if (depth && hit.mat->scatter(scatterData, r_in, hit)) {
 
         if (scatterData.isSpecular) {
@@ -207,7 +207,7 @@ namespace {
     auto * world = new intersectable_container();
     world->items.push_back(new normal_flip(new yz_rect(vec2(0, 0), vec2(555, 555), 555, green)));
     world->items.push_back(new yz_rect(vec2(0, 0), vec2(555, 555), 0, red));
-    world->items.push_back(new xz_rect(vec2(213, 227), vec2(343, 332), 554, light));
+    world->items.push_back(new normal_flip(new xz_rect(vec2(213, 227), vec2(343, 332), 554, light)));
     world->items.push_back(new xz_rect(vec2(0, 0), vec2(555, 555), 0, white));
     world->items.push_back(new normal_flip(new xz_rect(vec2(0, 0), vec2(555, 555), 555, white)));
     world->items.push_back(new normal_flip(new xy_rect(vec2(0, 0), vec2(555, 555), 555, white)));
@@ -370,7 +370,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 200;
-  const unsigned s = 100;
+  const unsigned s = 1000;
 
   uint8_t image[3 * w * h];
 

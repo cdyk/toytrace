@@ -25,7 +25,7 @@ public:
   // Probability of scattering in r_scattered direction.
   virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const = 0;
 
-  virtual vec3 emitted(const vec2& t, const vec3& p) const { return vec3(0); }
+  virtual vec3 emitted(const ray& r_in, const intersection& hitData, const vec2& t, const vec3& p) const { return vec3(0); }
 };
 
 class lambertian : public material
@@ -89,8 +89,8 @@ public:
                        const intersection& hit) const override { return false; }
   virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const override { return 0.f; }
 
-  virtual vec3 emitted(const vec2& t, const vec3& p) const { return emit->value(t, p); }
-
+  virtual vec3 emitted(const ray& r_in, const intersection& hitData, const vec2& t, const vec3& p) const override;
+  
   texture* emit;
 };
 

@@ -97,3 +97,13 @@ bool isotropic::scatter(ray& scattered,
   return true;
 }
 #endif
+
+vec3 diffuse_light::emitted(const ray& r_in, const intersection& hitData, const vec2& t, const vec3& p) const
+{
+  if (dot(r_in.dir, hitData.n) < 0.f) {
+    return emit->value(t, p);
+  }
+  else {
+    return 0.f;
+  }
+}
