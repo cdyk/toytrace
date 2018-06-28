@@ -44,21 +44,23 @@ public:
   texture* albedo;
 };
 
-#if 0
 class metal : public material
 {
 public:
   metal(const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz <= 1.f ? fuzz : 1.f) {}
 
-  virtual bool scatter(ray& scattered,
-                       vec3& attenuation,
+  virtual bool scatter(ScatterData& scatterData,
                        const ray& r_in,
                        const intersection& hit) const override;
+
+  virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const  override { return 0.f; }
 
   vec3 albedo;
   float fuzz;
 
 };
+
+#if 0
 
 class dielectric : public material
 {

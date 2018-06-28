@@ -29,17 +29,21 @@ float lambertian::scattering_pdf(const ray& r_in, const intersection& hit, const
 }
 
 
-#if 0
-bool metal::scatter(ray& scattered,
-                    vec3& attenuation,
+bool metal::scatter(ScatterData& scatterData,
                     const ray& r_in,
                     const intersection& hit) const
 {
-  scattered = ray(hit.p, reflect(normalize(r_in.dir), hit.n) + fuzz*random_in_unit_sphere(), r_in.time);
-  attenuation = albedo;
-  return 0 < dot(scattered.dir, hit.n);
+  auto reflected = reflect(normalize(r_in.dir), hit.n);
+
+  scatterData.specularRay = ray(hit.p, reflected + fuzz * random_in_unit_sphere(), r_in.time);
+  scatterData.attenuation = albedo;
+  scatterData.isSpecular = true;
+  scatterData.pdf = nullptr;
+
+  return true;
 }
 
+#if 0
 
 bool dielectric::scatter(ray& scattered,
                          vec3& attenuation,

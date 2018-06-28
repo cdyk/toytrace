@@ -31,15 +31,25 @@ namespace {
       auto emitted = hit.mat->emitted(hit.t, hit.p);
       if (depth && hit.mat->scatter(scatterData, r_in, hit)) {
 
-        hitable_pdf pdf_light(light_shape, hit.p);
-        mixture_pdf pdf(&pdf_light, scatterData.pdf);
+        if (scatterData.isSpecular) {
 
-        auto r_scattered = ray(hit.p, pdf.generate(), hit.t);
-        auto one_over_pdf = pdf.one_over_value(r_scattered.dir);
+          auto col = color(scatterData.specularRay, world, light_shape, depth - 1);
+          return scatterData.attenuation * col;
 
-        auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
-        auto col = color(r_scattered, world, light_shape, depth - 1);
-        return emitted + scatterData.attenuation * spdf * one_over_pdf * col;
+        }
+        else {
+
+          hitable_pdf pdf_light(light_shape, hit.p);
+          mixture_pdf pdf(&pdf_light, scatterData.pdf);
+
+          auto r_scattered = ray(hit.p, pdf.generate(), hit.t);
+          auto one_over_pdf = pdf.one_over_value(r_scattered.dir);
+
+          auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
+          auto col = color(r_scattered, world, light_shape, depth - 1);
+          return emitted + scatterData.attenuation * spdf * one_over_pdf * col;
+
+        }
       }
       else {
         return emitted;
@@ -202,8 +212,10 @@ namespace {
     world->items.push_back(new normal_flip(new xz_rect(vec2(0, 0), vec2(555, 555), 555, white)));
     world->items.push_back(new normal_flip(new xy_rect(vec2(0, 0), vec2(555, 555), 555, white)));
 
+    auto * aluminum = new metal(vec3(0.8f, 0.85f, 0.88f), 0.f);
+
     world->items.push_back(new translate(new rotate_y(new box(vec3(0), vec3(165, 165, 165), white), -18), vec3(130, 0, 65)));
-    world->items.push_back(new translate(new rotate_y(new box(vec3(0), vec3(165, 330, 165), white), 15), vec3(265, 0, 295)));
+    world->items.push_back(new translate(new rotate_y(new box(vec3(0), vec3(165, 330, 165), aluminum), 15), vec3(265, 0, 295)));
 
     auto * set_up = new setup;
     set_up->camera = new camera(vec3(278, 278, -800), vec3(278, 278, 0), vec3(0, 1, 0), 40.f, aspect, 0.0f, 0, 1);
