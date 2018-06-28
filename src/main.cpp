@@ -349,8 +349,9 @@ namespace {
         auto v = float(j + frand()) / float(h);
 
         auto r = set_up->camera->getRay(u, v);
+        auto c = color(r, set_up->world, set_up->light_shape, 20);
 
-        col = col + color(r, set_up->world, set_up->light_shape, 20);
+        col = col + vec3(denan(c.r), denan(c.g), denan(c.b));
       }
       col = (1.f / s)*col;
 
