@@ -8,6 +8,8 @@
 class material;
 class texture;
 
+struct vec3;
+
 struct intersection
 {
   float t;
@@ -23,6 +25,10 @@ public:
   virtual bool intersect(const ray& r, float t_min, float t_max, intersection& isec) const = 0;
 
   virtual aabb bounding_box(float time0, float time1) const = 0;
+
+  virtual float pdf_value(const vec3& origin, const vec3& dir) const { return 0.f; }
+
+  virtual vec3 random(const vec3& origin) const { return vec3(1, 0, 0); }
 };
 
 class intersectable_container : public intersectable

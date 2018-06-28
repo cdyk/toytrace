@@ -1,3 +1,4 @@
+#include "intersectable.h"
 #include "vec3.h"
 #include "funcs.h"
 #include "pdf.h"
@@ -17,4 +18,20 @@ vec3 cosine_pdf::generate() const
 {
   auto l = random_cosine_direction();
   return l.x*u + l.y*v + l.z*w;
+}
+
+hitable_pdf::hitable_pdf(intersectable* object, const vec3& origin) :
+  object(object),
+  origin(origin)
+{
+}
+
+float hitable_pdf::value(const vec3& direction) const
+{
+  return object->pdf_value(origin, direction);
+}
+
+vec3 hitable_pdf::generate() const
+{
+  return object->random(origin);
 }

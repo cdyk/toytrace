@@ -32,12 +32,20 @@ namespace {
       auto emitted = hit.mat->emitted(hit.t, hit.p);
       if (depth && hit.mat->scatter(r_scattered, one_over_pdf, albedo, r_in, hit)) {
 
+
+        intersectable * light_shape = new xz_rect(vec2(213, 227), vec2(343, 332), 554, nullptr);
+        hitable_pdf pdf(light_shape, hit.p);
+
+        r_scattered = ray(hit.p, pdf.generate(), hit.t);
+        one_over_pdf = pdf.one_over_value(r_scattered.dir);
+
+#if 0
         cosine_pdf pdf(hit.n);
 
         r_scattered = ray(hit.p, pdf.generate(), hit.t);
         one_over_pdf = pdf.one_over_value(r_scattered.dir);
+#endif
 #if 0
-
         vec3 on_light = vec3(213 + (343 - 213)*frand(),
                              554,
                              227 + (332 - 227)*frand());
@@ -372,7 +380,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 200;
-  const unsigned s = 1000;
+  const unsigned s = 10;
 
   uint8_t image[3 * w * h];
 

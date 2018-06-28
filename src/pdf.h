@@ -2,6 +2,8 @@
 
 #include "vec3.h"
 
+class intersectable;
+
 class pdf
 {
 public:
@@ -26,5 +28,21 @@ public:
   virtual vec3 generate() const override;
 
   vec3 u, v, w;
+
+};
+
+class hitable_pdf : public pdf
+{
+public:
+  hitable_pdf() = delete;
+
+  hitable_pdf(intersectable* object, const vec3& origin);
+
+  virtual float value(const vec3& direction) const override;
+
+  virtual vec3 generate() const override;
+
+  intersectable* object;
+  vec3 origin;
 
 };

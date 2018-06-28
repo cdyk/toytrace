@@ -31,6 +31,10 @@ public:
 
   aabb bounding_box(float time0, float time1) const override;
 
+  virtual float pdf_value(const vec3& origin, const vec3& dir) const override;
+
+  virtual vec3 random(const vec3& origin) const override;
+
   material* mat;
   vec2 p0;
   vec2 p1;

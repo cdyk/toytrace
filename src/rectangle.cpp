@@ -1,4 +1,30 @@
+#include "funcs.h"
 #include "rectangle.h"
+
+float xz_rect::pdf_value(const vec3& origin, const vec3& dir) const
+{
+  intersection hit;
+  if (this->intersect(ray(origin, dir, 0), 0.001f, max_float, hit)) {
+    auto area = (p1.x - p0.x)*(p1.y - p0.y);
+    auto dir_sqr_len = dot(dir, dir);
+    auto dir_len = std::sqrt(dir_sqr_len);
+
+    auto distance_squared = hit.t * hit.t * dir_sqr_len;
+    auto cosine = std::abs(dot(hit.n, dir) / dir_len);
+
+    return distance_squared / (cosine * area);
+  }
+  return 0.f;
+}
+
+vec3 xz_rect::random(const vec3& origin) const
+{
+  return vec3(p0.x + (p1.x - p0.x)*frand(),
+              offset,
+              p0.y + (p1.y - p0.y)*frand()) - origin;
+}
+
+
 
 aabb xy_rect::bounding_box(float time0, float time1) const
 {
@@ -16,7 +42,6 @@ aabb yz_rect::bounding_box(float time0, float time1) const
 {
   return aabb(vec3(offset - 0.0001f, p0.x, p0.y), vec3(offset + 0.0001f, p1.x, p1.y));
 }
-
 
 
 bool xy_rect::intersect(const ray& r, float t_min, float t_max, intersection& isec) const
