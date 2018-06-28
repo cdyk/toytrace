@@ -21,47 +21,25 @@
 
 namespace {
 
-  vec3 color(const ray& r_in, const intersectable* world, unsigned depth)
+  vec3 color(const ray& r_in, const intersectable* world, const intersectable* light_shape, unsigned depth)
   {
     intersection hit;
     if (world->intersect(r_in, 0.001f, std::numeric_limits<float>::max(), hit)) {
-      ray r_scattered;
-      vec3 albedo;
-      float one_over_pdf;
+
+      ScatterData scatterData;
 
       auto emitted = hit.mat->emitted(hit.t, hit.p);
-      if (depth && hit.mat->scatter(r_scattered, one_over_pdf, albedo, r_in, hit)) {
+      if (depth && hit.mat->scatter(scatterData, r_in, hit)) {
 
+        hitable_pdf pdf_light(light_shape, hit.p);
+        mixture_pdf pdf(&pdf_light, scatterData.pdf);
 
-        intersectable * light_shape = new xz_rect(vec2(213, 227), vec2(343, 332), 554, nullptr);
-        hitable_pdf pdf0(light_shape, hit.p);
-        cosine_pdf pdf1(hit.n);
-        mixture_pdf pdf(&pdf0, &pdf1);
+        auto r_scattered = ray(hit.p, pdf.generate(), hit.t);
+        auto one_over_pdf = pdf.one_over_value(r_scattered.dir);
 
-        r_scattered = ray(hit.p, pdf.generate(), hit.t);
-        one_over_pdf = pdf.one_over_value(r_scattered.dir);
-
-#if 0
-        vec3 on_light = vec3(213 + (343 - 213)*frand(),
-                             554,
-                             227 + (332 - 227)*frand());
-
-        auto to_light = on_light - hit.p;
-        if (dot(to_light, hit.n) < 0.f) return emitted;
-
-        auto distance_sqr = dot(to_light, to_light);
-        to_light = normalize(to_light);
-        auto light_area = (343 - 213)*(332 - 227);
-        auto light_cosine = fmax(to_light.y, -to_light.y);
-        if (light_cosine < 0.000001f) return emitted;
-
-        one_over_pdf = (light_cosine * light_area) / distance_sqr;
-
-        r_scattered = ray(hit.p, to_light, hit.t);
-#endif
         auto spdf = hit.mat->scattering_pdf(r_in, hit, r_scattered);
-        auto col = color(r_scattered, world, depth - 1);
-        return emitted + albedo * spdf * one_over_pdf * col;
+        auto col = color(r_scattered, world, light_shape, depth - 1);
+        return emitted + scatterData.attenuation * spdf * one_over_pdf * col;
       }
       else {
         return emitted;
@@ -77,6 +55,7 @@ namespace {
   struct setup
   {
     camera* camera;
+    intersectable* light_shape;
     intersectable* world;
   };
 
@@ -231,6 +210,8 @@ namespace {
     set_up->camera->orientation = axisAngle(vec3(0, 1, 0), float(3.14159265358979323846264338327950288)); // exactly 180 deg rotation not handled yet.
     set_up->world = new bvh(world->items, 0, 1);
 
+    set_up->light_shape = new xz_rect(vec2(213, 227), vec2(343, 332), 554, nullptr);
+
     return set_up;
   }
 
@@ -357,7 +338,7 @@ namespace {
 
         auto r = set_up->camera->getRay(u, v);
 
-        col = col + color(r, set_up->world, 20);
+        col = col + color(r, set_up->world, set_up->light_shape, 20);
       }
       col = (1.f / s)*col;
 
@@ -376,7 +357,7 @@ int main(int argc, char** argv)
   const char* filename = "output.png";
   const unsigned w = 200;
   const unsigned h = 200;
-  const unsigned s = 1000;
+  const unsigned s = 100;
 
   uint8_t image[3 * w * h];
 

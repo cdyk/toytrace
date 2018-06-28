@@ -4,13 +4,21 @@
 
 struct intersection;
 
+class pdf;
+
+struct ScatterData
+{
+  ray specularRay;
+  pdf* pdf;
+  vec3 attenuation;
+  bool isSpecular;
+};
+
 class material
 {
 public:
 
-  virtual bool scatter(ray& r_scattered,
-                       float& one_over_pdf,            // Probability of sampling function.
-                       vec3& albedo,
+  virtual bool scatter(ScatterData& scatterData,
                        const ray& r_in,
                        const intersection& hit) const = 0;
 
@@ -27,9 +35,7 @@ public:
 
   lambertian(texture* albedo) : albedo(albedo) {}
 
-  virtual bool scatter(ray& r_scattered,
-                       float& one_over_pdf,
-                       vec3& attenuation,
+  virtual bool scatter(ScatterData& scatterData,
                        const ray& r_in,
                        const intersection& hit) const override;
 
@@ -76,9 +82,7 @@ public:
 
   diffuse_light(texture* emit) : emit(emit) {}
 
-  virtual bool scatter(ray& scattered,
-                       float& one_over_pdf,
-                       vec3& attenuation,
+  virtual bool scatter(ScatterData& scatterData,
                        const ray& r_in,
                        const intersection& hit) const override { return false; }
   virtual float scattering_pdf(const ray& r_in, const intersection& hit, const ray& r_scattered) const override { return 0.f; }

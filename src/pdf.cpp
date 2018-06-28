@@ -20,7 +20,7 @@ vec3 cosine_pdf::generate() const
   return l.x*u + l.y*v + l.z*w;
 }
 
-hitable_pdf::hitable_pdf(intersectable* object, const vec3& origin) :
+hitable_pdf::hitable_pdf(const intersectable* object, const vec3& origin) :
   object(object),
   origin(origin)
 {
@@ -36,7 +36,7 @@ vec3 hitable_pdf::generate() const
   return object->random(origin);
 }
 
-mixture_pdf::mixture_pdf(pdf* a, pdf* b) :
+mixture_pdf::mixture_pdf(const pdf* a, const pdf* b) :
   a(a),
   b(b)
 {}

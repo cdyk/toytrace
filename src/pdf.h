@@ -36,25 +36,25 @@ class hitable_pdf : public pdf
 public:
   hitable_pdf() = delete;
 
-  hitable_pdf(intersectable* object, const vec3& origin);
+  hitable_pdf(const intersectable* object, const vec3& origin);
 
   virtual float value(const vec3& direction) const override;
 
   virtual vec3 generate() const override;
 
-  intersectable* object;
+  const intersectable* object;
   vec3 origin;
 };
 
 class mixture_pdf : public pdf
 {
 public:
-  mixture_pdf(pdf* a, pdf* b);
+  mixture_pdf(const pdf* a, const pdf* b);
 
   virtual float value(const vec3& direction) const override;
 
   virtual vec3 generate() const override;
 
-  pdf* a;
-  pdf* b;
+  const pdf* a;
+  const pdf* b;
 };

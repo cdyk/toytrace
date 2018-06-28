@@ -1,11 +1,10 @@
 #include "funcs.h"
+#include "pdf.h"
 #include "material.h"
 #include "intersectable.h"
 
 
-bool lambertian::scatter(ray& r_scattered,
-                         float& one_over_pdf,
-                         vec3& attenuation,
+bool lambertian::scatter(ScatterData& scatterData,
                          const ray& r_in,
                          const intersection& hit) const
 {
@@ -16,9 +15,10 @@ bool lambertian::scatter(ray& r_scattered,
 
   vec3 on_hemisphere = dir_l.x*u + dir_l.y*v + dir_l.z*w;
 
-  r_scattered = ray(hit.p, normalize(on_hemisphere), r_in.time);
-  one_over_pdf = denan(pi / (dot(w, r_scattered.dir)));
-  attenuation = albedo->value(hit.u, hit.p);
+  scatterData.isSpecular = false;
+  scatterData.attenuation = albedo->value(hit.u, hit.p);
+  scatterData.pdf = new cosine_pdf(hit.n);
+
   return true;
 }
 
